@@ -6,6 +6,7 @@ import type {
   JsonRpcFetchFunc,
 } from "@ethersproject/providers";
 import { Web3Provider } from "@ethersproject/providers";
+import { Layout } from "@components/ui";
 
 function getLibrary(provider: ExternalProvider | JsonRpcFetchFunc) {
   const library = new Web3Provider(provider);
@@ -16,7 +17,9 @@ function getLibrary(provider: ExternalProvider | JsonRpcFetchFunc) {
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <Web3ReactProvider getLibrary={getLibrary}>
-      <Component {...pageProps} />
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
     </Web3ReactProvider>
   );
 }

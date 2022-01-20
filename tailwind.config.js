@@ -8,6 +8,13 @@ module.exports = {
       colors: {
         yellow: "#F2B705",
         green: "#53CBC8",
+        gray: "#838383",
+      },
+      backgroundImage: {
+        "background-pattern": "url('/movr_background.png);",
+      },
+      fontFamily: {
+        display: ["Inconsolata", "monospace"],
       },
     },
   },

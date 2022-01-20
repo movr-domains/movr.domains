@@ -1,9 +1,19 @@
+@import url("https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   html {
-    @apply bg-black text-white;
+    @apply bg-black text-white bg-[url('/movr_background.png')] font-display text-lg;
+  }
+
+  .container {
+    @apply px-4;
+  }
+
+  .btn {
+    @apply bg-yellow text-black py-1 px-3 rounded-lg block mt-3;
   }
 }

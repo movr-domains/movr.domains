@@ -1,15 +1,24 @@
-export default function HomePage() {
+import useWallet from "@hooks/useWallet";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
+
+export default function Home() {
+  const { wallet, connectWallet } = useWallet();
+  const { push } = useRouter();
+
   return (
-    <div className="text-white bg-black container mx-auto mt-10">
-      <div className="flex items-center space-x-4">
-        <h1 className="text-3xl text-yellow">movr.domains</h1>
-        <span className="text-green mt-1.5">[Version 0.0.1] </span>
-      </div>
-      <div className="mt-3">
-        <span className="text-red-500 uppercase font-bold text-sm">
-          System Offline
+    <main>
+      {!wallet && (
+        <span className="text-red-500">
+          Error: Type /connect to connect wallet or{" "}
+          <span
+            className="cursor-pointer hover:text-white transition duration-200"
+            onClick={() => connectWallet()}
+          >
+            click here
+          </span>
         </span>
-      </div>
-    </div>
+      )}
+    </main>
   );
 }
