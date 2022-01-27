@@ -1,5 +1,6 @@
 import Head from "next/head";
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 import { BsTwitter } from "react-icons/bs";
 
@@ -39,7 +40,31 @@ export default function HomePage() {
           </div>
         </div>
         <div className="fixed bottom-10 right-10 text-3xl">
-          <BsTwitter />
+          <ul className="flex space-x-4">
+            <li>
+              <a
+                href="https://twitter.com/MOVRDOMAINS"
+                rel="noreferrer"
+                target="_blank"
+              >
+                <BsTwitter />
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://app.subsocial.network/6168"
+                rel="noreferrer"
+                target="_blank"
+              >
+                <Image
+                  src="/subsocial.png"
+                  height="35px"
+                  width="35px"
+                  alt="Sub Social icon"
+                />
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
     </React.Fragment>
