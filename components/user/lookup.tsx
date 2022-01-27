@@ -16,14 +16,7 @@ export default function Lookup() {
   }, []);
 
   return (
-    <div className="text-gray text-lg mt-5 space-y-3 border-b border-dashed border-gray pb-10">
-      <p>Select a domain to manage it.</p>
-      <p>Type a domain below to begin a new registration.</p>
-      <p>
-        <Link href="/faq">
-          <a className="text-green">Help</a>
-        </Link>
-      </p>
+    <div className="text-gray text-lg space-y-3 text-center">
       <form
         onSubmit={(e: FormEvent) => {
           e.preventDefault();
@@ -32,19 +25,25 @@ export default function Lookup() {
             setError("Domains must be 3 characters or more.");
             return;
           }
-          push(`/domain/${domainSearch}`);
+          push(`/search/${domainSearch}`);
         }}
       >
-        <input
-          type="text"
-          ref={inputRef}
-          value={domainSearch}
-          className="bg-gray caret-red-500 outline-none bg-opacity-20 w-full px-2 py-1 text-white"
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            setDomainSearch(e.target.value)
-          }
-          placeholder="Lookup Domain..."
-        />
+        <div className="flex">
+          <input
+            type="text"
+            ref={inputRef}
+            value={domainSearch}
+            className=" bg-black caret-red-500 outline-none bg-opacity-20 w-full px-5 py-3 text-white rounded-tl rounded-bl border-yellow border"
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setDomainSearch(e.target.value)
+            }
+            placeholder="Lookup Domain..."
+            autoComplete="off"
+          />
+          <button className="bg-yellow text-black px-4 py-0.5 uppercase rounded-tr rounded-br">
+            Search
+          </button>
+        </div>
       </form>
       <p className="text-[#ff0000]">{error}</p>
     </div>

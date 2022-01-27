@@ -3,20 +3,32 @@ import { useEffect, useState } from "react";
 interface TimerProps {
   seconds: number;
   active: boolean;
-  setSeconds: (seconds: number) => void;
+  setSeconds: () => void;
 }
 
 export default function Timer({ seconds, active, setSeconds }: TimerProps) {
+  const [time, setTime] = useState(seconds);
+  const [isActive, setIsActive] = useState(active);
+
+  function start() {
+    setIsActive(true);
+  }
+
   useEffect(() => {
     let interval: any = null;
     if (active) {
       interval = setInterval(() => {
-        setSeconds(seconds - 1);
+        setTime(time - 1);
       }, 1000);
-    } else if (!active && seconds !== 0) {
+    } else if (!active && time !== 0) {
       clearInterval(interval);
     }
     return () => clearInterval(interval);
-  }, [active, seconds, setSeconds]);
-  return <div>{seconds}</div>;
+  }, [active, time, setTime]);
+  return (
+    <div>
+      <span>{time}</span>
+      <button onClick={start}>Start Timer</button>
+    </div>
+  );
 }

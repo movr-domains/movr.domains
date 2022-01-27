@@ -3,11 +3,15 @@ import { useState, useEffect } from "react";
 import { injected } from "../constants/connectors";
 import { Web3Provider } from "@ethersproject/providers";
 import { ethers } from "ethers";
+import shortenHex from "@lib/shorten-hex";
+import getName from "@lib/get-name";
 
 export default function useWallet() {
   const [connectedWallet, setConnectedWallet] = useState<string | null>();
+  const [mdrName, setMdrName] = useState<string | null>();
 
-  const { activate, active, account } = useWeb3React<Web3Provider>();
+  const { activate, active, account, chainId, connector } =
+    useWeb3React<Web3Provider>();
 
   useEffect(() => {
     const { ethereum } = window;
@@ -31,22 +35,20 @@ export default function useWallet() {
     }
   }, []);
 
-  // useEffect(() => {
-  //   if (window.ethereum.chainId !== '0x1') return;
-  //   async function lookUpENS(wallet: string) {
-  //     const provider = new ethers.providers.Web3Provider(window.ethereum);
-  //     const ENS = await provider.lookupAddress(wallet);
-  //     setENSName(ENS);
-  //   }
+  useEffect(() => {
+    async function lookUpName(wallet: string) {
+      const name = await getName(wallet);
+      setMdrName(name);
+    }
 
-  //   if (connectedWallet) {
-  //     lookUpENS(connectedWallet);
-  //   }
+    if (connectedWallet) {
+      lookUpName(connectedWallet);
+    }
 
-  //   return () => {
-  //     setENSName('');
-  //   };
-  // }, [connectedWallet]);
+    return () => {
+      setMdrName("");
+    };
+  }, [connectedWallet]);
 
   async function getSigner() {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -60,23 +62,17 @@ export default function useWallet() {
     }
   }, [active, account]);
 
-  const connectWallet = () => {
+  const connectWallet = async () => {
     activate(injected, (error) => console.log(error), true).catch((error) => {
       console.log("Connect Wallet Error: ", error);
     });
   };
-
-  function shortenHex(hex?: string | null, length = 4) {
-    if (!hex) return;
-    return `${hex.substring(0, length + 2)}…${hex.substring(
-      hex.length - length
-    )}`;
-  }
 
   return {
     connectWallet,
     wallet: connectedWallet,
     truncatedWallet: shortenHex(connectedWallet),
     getSigner,
+    mdrName: `${mdrName}.movr`,
   };
 }

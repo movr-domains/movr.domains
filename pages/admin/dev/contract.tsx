@@ -1,5 +1,5 @@
 import { DeployerAddresses } from "@components/admin";
-import addresses from "../../constants/contracts";
+import addresses from "../../../constants/contracts";
 import { moonbaseProvider } from "@lib/providers";
 import { ethers } from "ethers";
 import ENSDeployer from "@lib/abis/ENSDeployer.json";
@@ -15,8 +15,6 @@ import namehash from "eth-ens-namehash";
 import contractLog from "@lib/dev/console-contract";
 import Timer from "@components/timer";
 import useWallet from "@hooks/useWallet";
-
-const WALLET_ADDRESS = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
 
 export default function ContractPage() {
   return (
@@ -140,7 +138,6 @@ function CreateDomain() {
       <button onClick={() => register(rentPrice)} className="btn">
         Register
       </button>
-      <Timer seconds={time} active={isCommitted} setSeconds={setTime} />
     </div>
   );
 }

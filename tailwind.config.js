@@ -11,7 +11,7 @@ module.exports = {
         gray: "#838383",
       },
       backgroundImage: {
-        "background-pattern": "url('/movr_background.png);",
+        background: "url('/marble_background.png);",
       },
       fontFamily: {
         display: ["Inconsolata", "monospace"],

@@ -6,7 +6,11 @@
 
 @layer base {
   html {
-    @apply bg-black text-white bg-[url('/movr_background.png')] font-display text-lg;
+    @apply bg-black text-white font-display text-lg;
+  }
+
+  body {
+    @apply bg-[url('/marble_background.png')] min-h-screen;
   }
 
   .container {
@@ -15,5 +19,22 @@
 
   .btn {
     @apply bg-yellow text-black py-1 px-3 rounded-lg block mt-3;
+  }
+
+  .nav-links li:first-child {
+    @apply border-l;
+  }
+
+  .nav-links li {
+    @apply border-r border-zinc-700 p-3 h-16 flex items-center;
+  }
+
+  .nav-links a,
+  .nav-links button {
+    @apply font-bold uppercase tracking-wider flex px-4 items-center hover:text-green transition duration-200;
+  }
+
+  .nav-dropdown-links a {
+    @apply hover:text-green transition duration-200;
   }
 }

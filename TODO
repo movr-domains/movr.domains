@@ -1,0 +1,32 @@
+User Flow
+
+The user...
+
+wants to buy a domain
+  1. Searches for domains
+  2. Finds it's avabile
+  3. Select Registration Duration
+  4. Claim domain
+  5. Wait 60 secs
+  6. Register domain
+  7. Edit domain options (setting records)
+
+wants to send domain
+  1. Goes to profile page
+  2. Sees domain listing
+  3. 
+
+
+Features Needed
+
+Buy a domain
+Set records for domain 
+  - twitter/github/nft/etc
+  - controller
+Transfer domain
+
+
+
+
+
+

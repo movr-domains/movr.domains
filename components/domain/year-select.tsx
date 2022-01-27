@@ -1,13 +1,37 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BsChevronUp, BsChevronDown } from "react-icons/bs";
+import { useRouter } from "next/router";
 
 export default function YearSelect() {
   const [years, setYears] = useState(1);
-  const number = 1;
-  const price = 100;
-  const movrPrice = 1;
+  const [basePrice, setBasePrice] = useState(10);
+  const [error, setError] = useState("");
+
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!router.query.name) return;
+
+    switch (router.query.name.length) {
+      case 1:
+        setError("Names must be at least 3 characters in length.");
+        break;
+      case 2:
+        setError("Names must be at least 3 characters in length.");
+        break;
+      case 3:
+        setBasePrice(250);
+        break;
+      case 4:
+        setBasePrice(100);
+        break;
+      default:
+        setBasePrice(10);
+    }
+  }, [router.query.name]);
+
   return (
     <div>
       <div className="mt-10">
@@ -22,14 +46,7 @@ export default function YearSelect() {
                 <BsChevronUp />
               </motion.button>
               <span className="text-yellow text-5xl uppercase pl-3 flex items-center">
-                {years} years - ${price} ({movrPrice}{" "}
-                <Image
-                  src="/movr.png"
-                  height="45px"
-                  width="33px"
-                  alt="Movr logo"
-                />
-                )
+                {years} years - ${basePrice * years}
               </span>
               <motion.button
                 whileTap={{ opacity: 0.1 }}
@@ -41,18 +58,11 @@ export default function YearSelect() {
             </div>
             <div className="mt-4">
               <p className="text-white text-5xl uppercase flex items-center">
-                Lifetime - $2500 (10.1{" "}
-                <Image
-                  src="/movr.png"
-                  height="45px"
-                  width="33px"
-                  alt="Movr logo"
-                />
-                )
+                Lifetime - $2500
               </p>
             </div>
           </div>
-          <div className="border-4 rounded-xl border-gray">
+          <div className="border-4 rounded-xl border-zinc-700 bg-black">
             <div className="bg-yellow text-black text-lg font-bold text-center py-3 rounded-tl-lg rounded-tr-lg">
               <h4>Claiming a domain requires 2 transactions.</h4>
             </div>
