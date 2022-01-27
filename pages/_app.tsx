@@ -6,6 +6,7 @@ import type {
   JsonRpcFetchFunc,
 } from "@ethersproject/providers";
 import { Web3Provider } from "@ethersproject/providers";
+import Head from "next/head";
 
 function getLibrary(provider: ExternalProvider | JsonRpcFetchFunc) {
   const library = new Web3Provider(provider);
