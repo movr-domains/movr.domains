@@ -9,6 +9,9 @@ module.exports = {
         yellow: "#F2B705",
         green: "#53CBC8",
       },
+      backgroundImage: {
+        marble: "url('/bg.png')",
+      },
     },
   },
   plugins: [],

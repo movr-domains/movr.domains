@@ -6,4 +6,8 @@
   html {
     @apply bg-black text-white;
   }
+
+  body {
+    @apply bg-marble min-h-screen;
+  }
 }

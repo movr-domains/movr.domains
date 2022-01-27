@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function HomePage() {
   return (
-    <div className="text-white bg-black h-screen w-screen flex items-center justify-center">
+    <div className="h-screen w-screen flex items-center justify-center">
       <div className="text-center max-w-2xl">
         <div className="mb-2">
           <Image
@@ -19,7 +19,15 @@ export default function HomePage() {
           <p className="text-gray-300 uppercase text-base">
             Names to the numbers
           </p>
-          <h2 className="text-7xl font-bold mt-10">Q1 2022</h2>
+          <div className="mt-10">
+            <span className="uppercase">Arriving</span>
+            <h2 className="text-8xl font-bold">Q1 2022</h2>
+          </div>
+        </div>
+        <div className="flex items-center">
+          <div className="mx-auto">
+            <img src="/animated.png" width="175" height="280" />
+          </div>
         </div>
       </div>
       <div className="fixed bottom-0 right-0">
