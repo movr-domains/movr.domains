@@ -12,6 +12,9 @@ module.exports = {
       backgroundImage: {
         marble: "url('/bg.png')",
       },
+      fontFamily: {
+        display: ["Inconsolata", "monospace"],
+      },
     },
   },
   plugins: [],

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { BsTwitter } from "react-icons/bs";
 
 export default function HomePage() {
   return (
@@ -10,6 +11,7 @@ export default function HomePage() {
             height="109px"
             width="800px"
             alt="MOVR Domains Logo"
+            priority
           />
         </div>
         <div className="text-lg">
@@ -30,8 +32,8 @@ export default function HomePage() {
           </div>
         </div>
       </div>
-      <div className="fixed bottom-0 right-0">
-        <p>Twitter</p>
+      <div className="fixed bottom-10 right-10 text-3xl">
+        <BsTwitter />
       </div>
     </div>
   );
