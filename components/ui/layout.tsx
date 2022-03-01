@@ -1,6 +1,6 @@
-import Toast from "../toast";
+import Toast from "./Toast";
 import React from "react";
-import Header from "./header";
+import Header from "./Header";
 import { useRouter } from "next/router";
 
 interface Props {
@@ -12,7 +12,9 @@ export default function Layout({ children }: Props) {
   return (
     <React.Fragment>
       {router.pathname !== "/" && <Header />}
-      <div className="container mx-auto">{children}</div>
+      <div className="wrapper">
+        <div className="col-span-10 col-start-2 px-14">{children}</div>
+      </div>
       <Toast />
     </React.Fragment>
   );

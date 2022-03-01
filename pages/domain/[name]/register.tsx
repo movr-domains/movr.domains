@@ -1,289 +1,304 @@
-import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import React, { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { BsChevronDown, BsChevronUp } from "react-icons/bs";
-import cn from "classnames";
-import { ethers } from "ethers";
-import addresses from "constants/contracts";
+import { AnimatePresence, motion } from "framer-motion";
+import { claimName, initialNameChecks, registerName } from "@lib/contract";
+import { validateNameLength } from "@lib/utils";
+import { Modal } from "@components/ui";
+import {
+  DisplayCosts,
+  YearsSelect,
+  RegisterSteps,
+} from "@components/registration";
+import { Web3Context } from "@components/wallet";
+import useWalletActions from "@hooks/useWalletActions";
+import RegistrationButton from "@components/registration/RegistrationButton";
+import RegistrationOptions from "@components/registration/RegistrationOptions";
 import MOVRRegistrarControllerABI from "@lib/abis/MOVRRegistrarControllerABI.json";
-import useWallet from "@hooks/useWallet";
-import lookUpOwner from "@lib/look-up";
-import namehash from "eth-ens-namehash";
+import addresses from "constants/contracts";
+import { BigNumber, ethers } from "ethers";
+import contractLog from "@lib/dev/console-contract";
 
 const oneYear = 31536000;
 
-export default function RegisterNamePage() {
+export default function RegisterPage() {
+  const [step, setStep] = useState(1);
   const [years, setYears] = useState(1);
-  const [isLifetime, setIsLifetime] = useState(false);
+  const [openQuestions, setOpenQuestions] = useState(false);
+  const [error, setError] = useState<string | null>();
   const [basePrice, setBasePrice] = useState(10);
-  const [rentPrice, setRentPrice] = useState<any>();
-  const [committed, setIsCommitted] = useState(false);
+  const [movrPrice, setMovrPrice] = useState(1);
+  const [secretHash, setSecretHash] = useState<string | null>();
+  const [available, setAvailable] = useState<boolean | null>(null);
+  const [valid, setValid] = useState<boolean | null>(null);
   const [time, setTime] = useState(60);
-  const [isCounting, setIsCounting] = useState(false);
-  const [error, setError] = useState("");
-
+  const [rent, setRent] = useState<BigNumber>();
   const router = useRouter();
+  const { state } = useContext(Web3Context);
 
-  const { wallet, connectWallet } = useWallet();
+  const { connect } = useWalletActions();
 
   const newName = Array.isArray(router.query.name)
     ? router.query.name![0]
     : router.query.name!;
 
   useEffect(() => {
-    async function fetch() {
-      const owner = await lookUpOwner(newName);
+    async function fetchRent() {
+      if (!newName) return;
 
-      if (owner) {
-        router.push(`/search/${newName}`);
+      const { unparsedRent, rentPrice, isAvailable, isValid } =
+        await initialNameChecks(newName);
+      if (rentPrice && unparsedRent) {
+        setRent(unparsedRent);
+        setMovrPrice(parseFloat(rentPrice));
+      }
+
+      if (isAvailable) {
+        setAvailable(isAvailable);
+      }
+
+      if (!isValid) {
+        router.push(`/domain/${newName}`);
       }
     }
-    fetch();
+    fetchRent();
   }, [newName, router]);
 
   useEffect(() => {
     if (!newName) return;
-
-    switch (newName.length) {
-      case 1:
-        setError("Names must be at least 3 characters in length.");
-        break;
-      case 2:
-        setError("Names must be at least 3 characters in length.");
-        break;
-      case 3:
-        setBasePrice(250);
-        break;
-      case 4:
-        setBasePrice(100);
-        break;
-      default:
-        setBasePrice(10);
-    }
-
-    console.log(namehash.hash("movr"));
+    const { price, error } = validateNameLength(newName);
+    if (error) return setError(error);
+    setBasePrice(price);
   }, [newName]);
 
+  // Claim Timer
   useEffect(() => {
     let interval: any = null;
-    if (isCounting) {
+    if (step === 2) {
       if (time == 0) {
-        setIsCounting(false);
+        setStep(3);
       }
       interval = setInterval(() => {
         setTime(time - 1);
       }, 1000);
-    } else if (!isCounting && time !== 0) {
+    } else if (step !== 2 && time !== 0) {
       clearInterval(interval);
     }
     return () => clearInterval(interval);
-  }, [time, isCounting]);
+  }, [time, step]);
 
-  async function claim(e: React.FormEvent) {
-    e.preventDefault();
-
-    // Function should not happen without a wallet, this is here to potentially prevent
-    // this function from getting called
-    if (!wallet) return;
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
-
-    const controller = new ethers.Contract(
-      addresses.movrRegistrar,
-      MOVRRegistrarControllerABI.abi,
-      signer
-    );
-    const rent = await controller.rentPrice(newName, oneYear);
-    console.log(
-      "Rent Price: ",
-      ethers.utils.formatEther(ethers.BigNumber.from(rent).toString())
-    );
-    setRentPrice(rent);
-
-    const isValid = await controller.valid(newName);
-    // TODO: Add error message for this.
-    if (!isValid) return;
-
-    const isAvailable = await controller.available(newName);
-
-    // TODO: Add error message for this.
-    if (!isAvailable) return;
-
-    const commitmentHash = await controller.makeCommitment(
-      newName,
-      wallet,
-      ethers.utils.formatBytes32String("secret")
-    );
-    console.log(commitmentHash);
-
-    const commit = await controller.commit(commitmentHash);
-    await commit.wait();
-    if (commit.hash) {
-      setIsCommitted(true);
-      setIsCounting(true);
+  const claim = async () => {
+    if (!state.web3Provider) {
+      setError("No Wallet Connected");
+      return;
     }
-  }
 
-  const registerName = async () => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
+    if (isNaN(years) || years < 0) {
+      setError("invalid years");
+      return;
+    }
 
-    const controller = new ethers.Contract(
-      addresses.movrRegistrar,
-      MOVRRegistrarControllerABI.abi,
-      signer
-    );
-    const register = await controller.register(
-      newName,
-      wallet,
-      oneYear,
-      ethers.utils.formatBytes32String("secret"),
-      {
-        value: rentPrice,
-        gasLimit: 420000,
+    if (!newName) {
+      setError("Name is not set");
+      return;
+    }
+
+    try {
+      const { error, secret, commit } = await claimName(
+        newName,
+        state.web3Provider,
+        years * oneYear,
+        state.address
+      );
+
+      if (error) {
+        console.log(error);
+        setError(error);
+        return;
       }
+
+      setSecretHash(secret);
+      setStep(2);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const register = async () => {
+    if (!state.web3Provider) {
+      setError("No Wallet Connected");
+      return;
+    }
+
+    if (!rent) {
+      setError("Rent price isn't set");
+      return;
+    }
+
+    let secret = secretHash;
+
+    if (!secret) {
+      secret = window.localStorage.getItem(`secret-${newName}.movr`);
+      if (!secret) return setError("No secret found");
+    }
+
+    const register = await registerName(
+      state.web3Provider,
+      newName,
+      state.address,
+      oneYear * years,
+      secret,
+      rent
     );
 
-    await register.wait();
-    setIsCommitted(false);
+    // if (!register.success) {
+    //   setError("Error registering name.");
+    //   return;
+    // }
+
+    // TODO: Do something after name is registered
+    console.log("Name registered");
   };
 
   return (
-    <main>
-      <div className="contrainer max-w-3xl mx-auto mt-10">
-        <div className="px-16 py-10 bg-black border border-green rounded mt-5">
-          <div className="mb-5 pb-3 border-b border-stone-800">
-            <h2 className="text-3xl font-bold border-stone-800">
-              Registering{" "}
-              <span className="uppercase text-yellow">{newName}.movr</span>
-            </h2>
-            <p>
-              <span className="text-yellow">Domain</span>{" "}
-              <span className="text-[#00ff00] test">available</span>.{" "}
-              {newName && newName.length < 4 && (
-                <span>
-                  {newName.length} letter .movr domains are available for{" "}
-                  {basePrice} per year.
-                </span>
-              )}
-            </p>
-          </div>
-          <div>
-            <div className="max-w-xl mx-auto py-5">
-              <h4 className="text-xl tracking-wider uppercase mb-3">
-                Registration Length
-              </h4>
-              <div className="flex space-x-10 justify-between">
-                <div
-                  className="flex items-center"
-                  onClick={() => {
-                    isLifetime && setIsLifetime(false);
-                  }}
-                >
-                  <div
-                    className={cn("flex flex-col items-center", {
-                      "text-white": !isLifetime,
-                      "text-stone-800": isLifetime,
-                    })}
-                  >
-                    <motion.button
-                      whileTap={{ opacity: 0.1 }}
-                      className="text-xl mx-1 block"
-                      onClick={() => setYears(years + 1)}
-                    >
-                      <BsChevronUp />
-                    </motion.button>
-                    <span
-                      className={cn("text-2xl uppercase flex items-center", {
-                        "text-yellow": !isLifetime,
-                        "text-stone-800": isLifetime,
-                      })}
-                    >
-                      {years}
-                    </span>
-                    <motion.button
-                      whileTap={{ opacity: 0.1 }}
-                      className="text-xl px-1"
-                      onClick={() => {
-                        years >= 2 && setYears(years - 1);
-                      }}
-                    >
-                      <BsChevronDown />
-                    </motion.button>
-                  </div>
-                  <span
-                    className={cn("text-2xl uppercase text-yellow block ml-3", {
-                      "text-yellow": !isLifetime,
-                      "text-stone-800": isLifetime,
-                    })}
-                  >
-                    {years <= 1 ? "Year" : "Years"} - ${basePrice * years}
-                  </span>
-                </div>
-                <div className="mt-4 ml-3">
-                  <button
-                    onClick={() => setIsLifetime(!isLifetime)}
-                    className={cn(
-                      "text-2xl uppercase flex items-center px-3 py-1 rounded transition duration-200",
-                      {
-                        "bg-yellow text-black border border-white": isLifetime,
-                        "bg-black text-stone-800": !isLifetime,
-                      }
-                    )}
-                  >
-                    Lifetime - $2500
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div className=" mt-7 flex flex-col items-end">
-              {wallet ? (
-                !committed ? (
-                  <button
-                    className="px-5 py-0.5 bg-yellow text-black rounded"
-                    onClick={claim}
-                  >
-                    Claim {newName}.movr
-                  </button>
-                ) : (
-                  <React.Fragment>
-                    {time !== 0 && (
-                      <p>Please wait {time} seconds to claim your name.</p>
-                    )}
+    <React.Fragment>
+      <div className="wrapper">
+        <div className="col-start-3 col-span-8 mt-16">
+          <div className="flex flex-col">
+            <Header name={newName} step={step} />
+            <motion.div
+              initial={{
+                y: 0,
+                marginTop: "20px",
+              }}
+              animate={{
+                y: step === 1 ? 0 : -30,
+                marginTop: step !== 1 ? 0 : "20px",
+              }}
+              transition={{ delay: 0.5, duration: 1 }}
+              layout
+            >
+              <RegistrationOptions
+                step={step}
+                setYears={(years) => setYears(years)}
+                movrPrice={movrPrice}
+                years={years}
+                basePrice={basePrice}
+              />
+              <div className="mt-10 flex justify-between items-center">
+                <div className="flex space-x-3 items-center">
+                  <div>
                     <button
-                      className={cn("px-5 py-0.5  text-black rounded", {
-                        "bg-yellow": time == 0 && !isCounting,
-                        "bg-gray": time !== 0,
-                      })}
-                      onClick={registerName}
-                      disabled={time !== 0}
+                      onClick={() => setOpenQuestions(true)}
+                      className="outline-none"
                     >
-                      Register {newName}.movr
+                      <QuestionMark />
                     </button>
-                  </React.Fragment>
-                )
-              ) : (
-                <button
-                  className="px-5 py-0.5 bg-yellow text-black rounded"
-                  onClick={connectWallet}
-                >
-                  Connect Wallet
-                </button>
-              )}
-
-              <div className="mt-2 text-right">
-                <p className="text-sm text-gray">
-                  Transaction {!committed ? "1" : "2"} of 2
-                </p>
-                <p className="text-sm text-gray">
-                  Registering a new domain requires two transactions.
-                </p>
+                  </div>
+                  <p className="uppercase text-sm text-gray">
+                    Step {step} of 3
+                  </p>
+                </div>
+                {step === 2 && (
+                  <div className="flex items-center space-x-3">
+                    <span className="font-bold uppercase text-sm">
+                      Time Remaining {time}
+                    </span>
+                  </div>
+                )}
+                <RegistrationButton
+                  step={step}
+                  text={
+                    step === 1
+                      ? "Claim"
+                      : step === 2
+                      ? "Claiming"
+                      : step === 3
+                      ? "Register"
+                      : "error"
+                  }
+                  claim={claim}
+                  register={register}
+                  time={time}
+                />
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </div>
-    </main>
+      <Modal isOpen={openQuestions} close={() => setOpenQuestions(false)}>
+        <RegisterSteps />
+      </Modal>
+    </React.Fragment>
+  );
+}
+
+function QuestionMark() {
+  return (
+    <span className="bg-gray bg-opacity-50 px-1.5 py-0.5 rounded-full hover:bg-opacity-100 transition-colors duration-200 hover:bg-green hover:text-black select-none font-bold text-sm focus:outline-none">
+      ?
+    </span>
+  );
+}
+
+function Header({ name, step }: { name: string; step: number }) {
+  return (
+    <div className="mb-5">
+      <h1 className="text-4xl uppercase font-bold flex flex-col text-yellow mb-1 bg-black relative z-10 space-x-3 break-words leading-5">
+        {step === 1 && (
+          <motion.span
+            key="register"
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ x: -10, opacity: 0 }}
+            transition={{ duration: 1, bounce: 0 }}
+            className="block"
+          >
+            Register{" "}
+          </motion.span>
+        )}
+
+        {step === 2 && (
+          <motion.span
+            key="claiming"
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -10, opacity: 0 }}
+            transition={{ duration: 1, bounce: 0 }}
+            className="block"
+          >
+            Claiming{" "}
+          </motion.span>
+        )}
+
+        {step === 3 && (
+          <motion.span
+            key="registering"
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -10, opacity: 0 }}
+            transition={{ duration: 0.2, bounce: 0 }}
+            className="block"
+          >
+            Registering
+          </motion.span>
+        )}
+      </h1>
+      <motion.span className="text-5xl uppercase font-bold  text-white block m-0">
+        {name}.movr
+      </motion.span>
+      <AnimatePresence>
+        {step === 1 && (
+          <motion.p
+            exit={{ y: -50, opacity: 0 }}
+            className="text-gray leading-4"
+            layout
+          >
+            <span className="text-yellow">Domain</span>{" "}
+            <span className="text-[#00ff00]">available</span> - 4 letter .movr
+            domains are available for $100 per year with a scaling .05% discount
+            to each added year.
+          </motion.p>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }

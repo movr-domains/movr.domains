@@ -11,10 +11,11 @@ module.exports = {
         gray: "#838383",
       },
       backgroundImage: {
-        background: "url('/marble_background.png);",
+        background: "url('/dark.png);",
       },
       fontFamily: {
         display: ["Inconsolata", "monospace"],
+        cabin: ["Cabin", "sans-serif"],
       },
     },
   },

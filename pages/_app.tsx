@@ -7,6 +7,11 @@ import type {
 } from "@ethersproject/providers";
 import { Web3Provider } from "@ethersproject/providers";
 import { Layout } from "@components/ui";
+import Head from "next/head";
+import React from "react";
+import { ApolloProvider } from "@apollo/client";
+import client from "@lib/apollo";
+import WalletProvider from "@components/wallet/provider";
 
 function getLibrary(provider: ExternalProvider | JsonRpcFetchFunc) {
   const library = new Web3Provider(provider);
@@ -17,11 +22,24 @@ function getLibrary(provider: ExternalProvider | JsonRpcFetchFunc) {
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <Web3ReactProvider getLibrary={getLibrary}>
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
+      <WalletProvider>
+        <ApolloProvider client={client}>
+          <Layout>
+            <React.Fragment>
+              <Meta />
+              <Component {...pageProps} />
+            </React.Fragment>
+          </Layout>
+        </ApolloProvider>
+      </WalletProvider>
     </Web3ReactProvider>
   );
 }
+
+const Meta = () => (
+  <Head>
+    <title>MOVR Domains</title>
+  </Head>
+);
 
 export default MyApp;

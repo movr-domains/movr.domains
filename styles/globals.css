@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cabin:wght@400;700&family=Inconsolata:wght@400;700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -6,11 +6,11 @@
 
 @layer base {
   html {
-    @apply bg-black text-white font-display text-lg;
+    @apply bg-contain bg-black text-white font-display text-lg;
   }
 
   body {
-    @apply bg-[url('/marble_background.png')] min-h-screen;
+    @apply min-h-screen;
   }
 
   .container {
@@ -36,5 +36,13 @@
 
   .nav-dropdown-links a {
     @apply hover:text-green transition duration-200;
+  }
+
+  .wrapper {
+    @apply grid grid-cols-12 gap-x-5;
+  }
+
+  .nav-list-item {
+    @apply px-5 py-2 border border-yellow border-opacity-20 hover:border-opacity-100 transition-colors select-none cursor-pointer;
   }
 }
