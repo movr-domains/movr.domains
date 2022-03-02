@@ -1,16 +1,16 @@
-import { BigNumber, ethers, providers } from "ethers";
-import addresses from "constants/contracts";
-import MOVRRegistrarControllerABI from "@lib/abis/MOVRRegistrarControllerABI.json";
-import { moonbeamDevProvider } from "./providers";
-import crypto, { privateDecrypt } from "crypto";
-import { renderToStringWithData } from "@apollo/client/react/ssr";
+import { BigNumber, ethers, providers } from 'ethers';
+import addresses from 'constants/contracts';
+import MOVRRegistrarControllerABI from '@lib/abis/MOVRRegistrarControllerABI.json';
+import { moonbeamDevProvider, moonbaseProvider } from './providers';
+import crypto, { privateDecrypt } from 'crypto';
+import { renderToStringWithData } from '@apollo/client/react/ssr';
 
 function randomSecret() {
-  return "0x" + crypto.randomBytes(32).toString("hex");
+  return '0x' + crypto.randomBytes(32).toString('hex');
 }
 
 function controllerContract(signer?: any) {
-  const provider = moonbeamDevProvider;
+  const provider = moonbaseProvider;
   return new ethers.Contract(
     addresses.movrRegistrar,
     MOVRRegistrarControllerABI.abi,
@@ -29,9 +29,9 @@ export async function claimName(
   const secret = randomSecret();
 
   const valid = await controller.valid(name);
-  if (!valid) return { error: "Name is not valid" };
+  if (!valid) return { error: 'Name is not valid' };
   const available = await controller.available(name);
-  if (!available) return { error: "Name is not available" };
+  if (!available) return { error: 'Name is not available' };
 
   const rent = await controller.rentPrice(name, duration);
 
@@ -50,7 +50,7 @@ export async function getRentPrice(name: string, duration: number) {
     const rent = await controller.rentPrice(name, duration);
     return rent;
   } catch (error) {
-    console.log("Get Rent Price", error);
+    console.log('Get Rent Price', error);
   }
 }
 
@@ -60,7 +60,7 @@ export async function checkIfAvailable(name: string) {
     const available = await controller.available(name);
     return available;
   } catch (error) {
-    console.log("Check If Vaild Error: ", error);
+    console.log('Check If Vaild Error: ', error);
   }
 }
 
@@ -70,7 +70,7 @@ export async function checkIfValid(name: string) {
     const valid = await controller.valid(name);
     return valid;
   } catch (error) {
-    console.log("Check If Vaild Error: ", error);
+    console.log('Check If Vaild Error: ', error);
   }
 }
 
@@ -98,7 +98,7 @@ export const initialNameChecks = async (name: string): Promise<InitialData> => {
       isValid,
     };
   } catch (error: any) {
-    console.log("Initial Check Error: ", error);
+    console.log('Initial Check Error: ', error);
     return {
       unparsedRent: null,
       rentPrice: null,
@@ -133,6 +133,6 @@ export const registerName = async (
     return { success: true };
   } catch (error) {
     console.log(error);
-    return { message: "Something went wrong", error };
+    return { message: 'Something went wrong', error };
   }
 };
