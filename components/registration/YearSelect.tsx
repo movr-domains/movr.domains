@@ -1,14 +1,14 @@
-import classNames from "classnames";
-import { motion } from "framer-motion";
+import classNames from 'classnames';
+import { motion } from 'framer-motion';
 import React, {
   ChangeEvent,
   FormEvent,
   useEffect,
   useRef,
   useState,
-} from "react";
-import { FaChevronDown, FaChevronUp } from "react-icons/fa";
-import { YearSelectButton } from ".";
+} from 'react';
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
+import { YearSelectButton } from '.';
 
 interface YearsSelectProps {
   step: number;
@@ -53,39 +53,39 @@ export default function YearsSelect({
   return (
     <React.Fragment>
       <div>
-        <div className="flex items-center justify-center ">
+        <div className='flex items-center justify-center'>
           <YearSelectButton
             onClick={() => handleYearsChange(-1)}
             Icon={FaChevronDown}
-            enabled={step !== 1 ? true : false}
-            direction="down"
+            enabled={step === 1}
+            direction='down'
           />
           <motion.span
             className={classNames(
-              "text-4xl font-bold uppercase w-44 text-center ",
+              'text-4xl font-bold uppercase w-44 text-center ',
               {
-                "text-[#333]": step !== 1,
+                'text-[#333]': step !== 1,
               }
             )}
           >
             <span
               onClick={editYears}
               className={classNames({
-                "cursor-pointer": step === 1,
-                "cursor-default": step !== 1,
+                'cursor-pointer': step === 1,
+                'cursor-default': step !== 1,
               })}
             >
               <span
                 className={classNames({
-                  "text-gray": focused,
+                  'text-gray': focused,
                 })}
               >
                 {years ? years : 0}
-              </span>{" "}
-              {years === 1 ? "Year" : "Years"}
+              </span>{' '}
+              {years === 1 ? 'Year' : 'Years'}
             </span>
             <form
-              className="fixed -top-80 left-96"
+              className='fixed -top-80 left-96'
               onSubmit={(e: FormEvent) => {
                 e.preventDefault();
                 if (hiddenInputRef?.current) {
@@ -95,7 +95,7 @@ export default function YearsSelect({
               }}
             >
               <input
-                type="number"
+                type='number'
                 value={years}
                 onFocus={() => setFocused(step === 1 ? true : false)}
                 onBlur={() => setFocused(false)}
@@ -110,8 +110,8 @@ export default function YearsSelect({
           <YearSelectButton
             onClick={() => handleYearsChange(1)}
             Icon={FaChevronUp}
-            enabled={step !== 1 ? true : false}
-            direction="up"
+            enabled={step === 1}
+            direction='up'
           />
         </div>
       </div>

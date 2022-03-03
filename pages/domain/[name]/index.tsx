@@ -1,9 +1,9 @@
-import useLookupOwner from "@hooks/useLookupOwner";
-import { useRouter } from "next/router";
-import { useContext, useEffect, useState } from "react";
-import Link from "next/link";
-import Web3Context from "@components/wallet/context";
-import { checkIfAvailable } from "@lib/contract";
+import useLookupOwner from '@hooks/useLookupOwner';
+import { useRouter } from 'next/router';
+import { useContext, useEffect, useState } from 'react';
+import Link from 'next/link';
+import Web3Context from '@components/wallet/context';
+import { checkIfAvailable } from '@lib/contract';
 
 export default function DomainPage() {
   const router = useRouter();
@@ -29,7 +29,7 @@ export default function DomainPage() {
 
   useEffect(() => {
     if (!state.address) {
-      console.log("Wallet not connected");
+      console.log('Wallet not connected');
       return;
     }
 
@@ -41,38 +41,38 @@ export default function DomainPage() {
   return (
     <div>
       {available === null ? (
-        <div className="wrapper px-14">
-          <div className="col-start-3 col-span-8">
+        <div className='wrapper px-14'>
+          <div className='col-start-3 col-span-8'>
             <p>Loading</p>
           </div>
         </div>
       ) : !available ? (
-        <div className="wrapper px-14">
-          <div className="col-start-3 col-span-8">
-            <h3 className="text-2xl text-red-500 font-bold mt-4 uppercase">
+        <div className='wrapper px-14'>
+          <div className='col-start-3 col-span-8'>
+            <h3 className='text-2xl text-red-500 font-bold mt-4 uppercase'>
               {router.query.name}.movr is not availble
             </h3>
             <p>Search again</p>
           </div>
         </div>
       ) : available ? (
-        <div className="wrapper">
-          <div className="col-span-12 ">
-            <h3 className="text-2xl text-yellow font-bold mt-4">
+        <div className='wrapper'>
+          <div className='col-span-12 '>
+            <h3 className='text-2xl text-yellow font-bold mt-4'>
               {router.query.name}.movr is availble
             </h3>
             <p>This name is availble for regiration</p>
-            <div className="flex">
+            <div className='flex'>
               <Link href={`/domain/${router.query.name}/register`}>
-                <a className="btn">Register Now</a>
+                <a className='btn'>Register Now</a>
               </Link>
             </div>
           </div>
         </div>
       ) : (
-        <div className="wrapper px-14">
-          <div className="col-start-3 col-span-8">
-            <h3 className="text-2xl text-blue-500 font-bold mt-4 uppercase">
+        <div className='wrapper px-14'>
+          <div className='col-start-3 col-span-8'>
+            <h3 className='text-2xl text-blue-500 font-bold mt-4 uppercase'>
               Loading
             </h3>
           </div>
