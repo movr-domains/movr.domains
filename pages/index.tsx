@@ -1,28 +1,15 @@
-import { Web3Context, ActionType, StateType } from '@components/wallet';
 import { Header } from '@components/ui';
-// import { Lookup } from "@components/user";
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { useContext, useState } from 'react';
 import { LookUp } from '@components/registration';
-import { namehash } from 'ethers/lib/utils';
-
-interface ContextProps {
-  state: typeof StateType;
-  dispatch: typeof ActionType;
-}
 
 export default function Home() {
-  const { state, dispatch } = useContext<ContextProps>(Web3Context);
-  console.log(state, dispatch);
-  console.log(namehash('spence.movr'));
-
   return (
-    <main className='h-screen flex items-center bg-opacity-100'>
+    <div className='h-screen flex items-center bg-opacity-100'>
       <div className='fixed top-0 w-full left-0'>
         <Header />
       </div>
-      <div className='max-w-xl mx-auto bg-opacity-40 p-16 rounded'>
+      <main className='max-w-xl mx-auto bg-opacity-40 p-16 rounded'>
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -48,7 +35,7 @@ export default function Home() {
           </div>
           <LookUp />
         </motion.div>
-      </div>
-    </main>
+      </main>
+    </div>
   );
 }

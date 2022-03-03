@@ -1,7 +1,7 @@
-import useWalletActions from "@hooks/useWalletActions";
-import React, { useContext, useEffect, useReducer } from "react";
-import Web3Context, { web3InitialState, web3Reducer } from "./context";
-import { web3Modal } from "@lib/providers";
+import useWalletActions from '@hooks/useWalletActions';
+import React, { useContext, useEffect, useReducer } from 'react';
+import Web3Context, { web3InitialState, web3Reducer } from './context';
+import { web3Modal } from '@lib/providers';
 
 interface WalletProviderProps {
   children: React.ReactChild;
@@ -28,12 +28,14 @@ function WalletState({ children }: { children: React.ReactChild }) {
   useEffect(() => {
     if (state?.provider?.on) {
       const handleAccountsChanged = (accounts: string[]) => {
-        console.log("accountsChanged", accounts);
+        console.log('accountsChanged', accounts);
         dispatch({
-          type: "SET_ADDRESS",
+          type: 'SET_ADDRESS',
           address: accounts[0],
         });
-        window.localStorage.setItem("user", accounts[0].toLowerCase());
+        if (accounts[0]) {
+          window.localStorage.setItem('user', accounts[0].toLowerCase());
+        }
       };
 
       const handleChainChanged = (_hexChainId: string) => {
@@ -41,23 +43,23 @@ function WalletState({ children }: { children: React.ReactChild }) {
       };
 
       const handleDisconnect = (error: { code: number; message: string }) => {
-        console.log("disconnect", error);
-        window.localStorage.removeItem("user");
+        console.log('disconnect', error);
+        window.localStorage.removeItem('user');
         disconnect();
       };
 
-      state.provider.on("accountsChanged", handleAccountsChanged);
-      state.provider.on("chainChanged", handleChainChanged);
-      state.provider.on("disconnect", handleDisconnect);
+      state.provider.on('accountsChanged', handleAccountsChanged);
+      state.provider.on('chainChanged', handleChainChanged);
+      state.provider.on('disconnect', handleDisconnect);
 
       return () => {
         if (state.provider.removeListener) {
           state.provider.removeListener(
-            "accountsChanged",
+            'accountsChanged',
             handleAccountsChanged
           );
-          state.provider.removeListener("chainChanged", handleChainChanged);
-          state.provider.removeListener("disconnect", handleDisconnect);
+          state.provider.removeListener('chainChanged', handleChainChanged);
+          state.provider.removeListener('disconnect', handleDisconnect);
         }
       };
     }
@@ -71,8 +73,8 @@ function WalletState({ children }: { children: React.ReactChild }) {
 
   useEffect(() => {
     dispatch({
-      type: "SET_ADDRESS",
-      address: window.localStorage.getItem("user"),
+      type: 'SET_ADDRESS',
+      address: window.localStorage.getItem('user'),
     });
   }, [dispatch]);
 

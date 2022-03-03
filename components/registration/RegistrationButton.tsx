@@ -1,5 +1,5 @@
-import classNames from "classnames";
-import { motion } from "framer-motion";
+import classNames from 'classnames';
+import { motion } from 'framer-motion';
 
 interface Props {
   step: number;
@@ -21,19 +21,18 @@ export default function RegistrationButton({
 
   return (
     <motion.button
-      className="px-5 py-0.5 uppercase font-bold border border-green border-opacity-50 relative hover:border-opacity-100 hover:bg-green hover:text-black"
+      className={classNames(
+        'px-5 py-0.5 uppercase font-bold border border-green border-opacity-50 relative hover:border-opacity-100 hover:bg-green hover:text-black transition-colors durations-200',
+        {
+          'border-0 hover:bg-black hover:text-white': step == 2,
+        }
+      )}
       onClick={step === 1 ? claim : register}
       whileTap={{ scale: 0.9 }}
       transition={{ duration: 0.2, bounce: 0 }}
       disabled={step === 2}
     >
       {text}
-      {step === 2 && (
-        <div
-          className="absolute h-full bg-green top-0 left-0 z-20 transition-all"
-          style={{ width: `${percentageLeft}%` }}
-        />
-      )}
     </motion.button>
   );
 }
