@@ -10,7 +10,7 @@ import useRegisterDomain from '@hooks/useRegisterDomain';
 import { searchedDomain } from 'apollo/reactiveVars';
 
 export default function RegisterPage() {
-  const [step, setStep] = useState(2);
+  const [step, setStep] = useState(1);
   const [time, setTime] = useState(60);
   const [timerActive, setTimerActive] = useState(false);
   const [years, setYears] = useState(1);
