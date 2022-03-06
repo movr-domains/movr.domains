@@ -1,5 +1,9 @@
 import ProgressBar from './ProgressBar';
 import { DisplayCosts, YearsSelect } from '.';
+import classNames from 'classnames';
+import React, { useContext } from 'react';
+import { Web3Context } from '@components/wallet';
+import shortenHex from '@lib/shorten-hex';
 
 interface Props {
   step: number;
@@ -7,6 +11,7 @@ interface Props {
   basePrice: number;
   movrPrice: number;
   time: number;
+
   setYears: (years: number) => void;
 }
 
@@ -16,8 +21,17 @@ export default function RegistrationOptions({
   basePrice,
   movrPrice,
   setYears,
+
   time,
 }: Props) {
+  const { state } = useContext(Web3Context);
+
+  const labelHeading = classNames(
+    'uppercase text-sm text-[#555] font-bold tracking-wider',
+    {
+      'text-center': step !== 3,
+    }
+  );
   return (
     <div>
       {step == 2 && (
@@ -27,11 +41,20 @@ export default function RegistrationOptions({
           </span>
         </div>
       )}
-      <div className='grid grid-cols-2 place-items-center'>
+      {step == 3 && (
+        <div className='mb-2'>
+          <span className='text-[#333] font-bold font-cabin uppercase'>
+            Something about registering a name will go here
+          </span>
+        </div>
+      )}
+      <div
+        className={classNames('grid grid-cols-2 gap-y-2', {
+          'place-items-center': step !== 3,
+        })}
+      >
         <div>
-          <p className='uppercase text-sm text-[#555] text-center font-bold tracking-wider'>
-            Registration Period
-          </p>
+          <p className={labelHeading}>Registration Period</p>
           <YearsSelect
             step={step}
             years={years}
@@ -39,9 +62,7 @@ export default function RegistrationOptions({
           />
         </div>
         <div>
-          <p className='uppercase text-sm text-[#555] text-center font-bold tracking-wider'>
-            Total Cost + Gas
-          </p>
+          <p className={labelHeading}>Total Cost + Gas</p>
           <DisplayCosts
             years={years}
             basePrice={basePrice}
@@ -49,6 +70,22 @@ export default function RegistrationOptions({
             step={step}
           />
         </div>
+        {step === 3 && (
+          <React.Fragment>
+            <div>
+              <h4 className={labelHeading}>Registrant</h4>
+              <span className='uppercase font-bold text-[#999]'>
+                {shortenHex(state.address)}
+              </span>
+            </div>
+            <div>
+              <h4 className={labelHeading}>Controller</h4>
+              <span className='uppercase font-bold text-[#999]'>
+                {shortenHex(state.address)}
+              </span>
+            </div>
+          </React.Fragment>
+        )}
       </div>
     </div>
   );

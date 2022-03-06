@@ -8,6 +8,7 @@ import RegistrationOptions from '@components/registration/RegistrationOptions';
 import { Header, RegistrationFooter } from '@components/registration';
 import useRegisterDomain from '@hooks/useRegisterDomain';
 import { searchedDomain } from 'apollo/reactiveVars';
+import { StateType } from '@components/wallet';
 
 export default function RegisterPage() {
   const [step, setStep] = useState(1);
@@ -95,7 +96,6 @@ export default function RegisterPage() {
         <div className='col-start-3 col-span-8 mt-16'>
           <div className='flex flex-col'>
             <Header name={newName} step={step} />
-
             <motion.div
               initial={{
                 y: 0,
@@ -103,7 +103,7 @@ export default function RegisterPage() {
               }}
               animate={{
                 y: step === 1 ? 0 : -30,
-                marginTop: step !== 1 ? 0 : '20px',
+                marginTop: step !== 1 ? '10px' : '20px',
               }}
               transition={{ duration: 0.5 }}
             >

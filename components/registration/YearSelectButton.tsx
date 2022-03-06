@@ -17,15 +17,17 @@ export default function YearSelectButton({
     <AnimatePresence>
       {enabled && (
         <motion.button
-          disabled={enabled}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className={classNames(
             'h-8 w-8 flex items-center justify-center text-2xl font-bold',
-            { 'text-[#222]': enabled, 'text-yellow': !enabled }
+            { 'text-yellow': enabled }
           )}
-          onClick={onClick}
+          onClick={() => {
+            onClick();
+            console.log('hello');
+          }}
           whileTap={{ y: direction === 'up' ? -10 : 10 }}
           transition={{ bounce: 0, duration: 0.2 }}
         >

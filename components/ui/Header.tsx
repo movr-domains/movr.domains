@@ -110,7 +110,7 @@ export default function Header() {
                       onBlur={() => setFocused(false)}
                       placeholder='Search names...'
                       className={classNames(
-                        'border-b border-green bg-black h-full px-3 py-1 text-lg w-full text-white outline-none transition duration-300',
+                        'border border-green bg-black h-full px-3 py-1 text-lg w-full text-white outline-none transition duration-300',
                         {
                           'border-opacity-50': !focused,
                           'border-opacity-100': focused,
@@ -119,7 +119,7 @@ export default function Header() {
                     />
                     <button
                       className={classNames(
-                        'border-b border-green border-l-0 px-5 uppercase font-bold font-cabin tracking-wider text-sm hover:text-green transition duration-300',
+                        'border border-green border-l-0 px-5 uppercase font-bold font-cabin tracking-wider text-sm hover:text-green transition duration-300',
                         {
                           'border-opacity-50': !focused,
                           'border-opacity-100': focused,

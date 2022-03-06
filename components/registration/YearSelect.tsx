@@ -32,11 +32,12 @@ export default function YearsSelect({
   };
 
   const handleYearsChange = (number: number) => {
+    console.log('hello');
     if (isNaN(years) && number == 1) {
       setYears(1);
       return;
     }
-
+    console.log(number);
     setYears(years + number);
   };
 
@@ -53,7 +54,7 @@ export default function YearsSelect({
   return (
     <React.Fragment>
       <div>
-        <div className='flex items-center justify-center'>
+        <div className='flex items-center'>
           <YearSelectButton
             onClick={() => handleYearsChange(-1)}
             Icon={FaChevronDown}
@@ -62,9 +63,10 @@ export default function YearsSelect({
           />
           <motion.span
             className={classNames(
-              'text-4xl font-bold uppercase w-44 text-center ',
+              'text-4xl font-bold uppercase  text-center ',
               {
                 'text-[#333]': step !== 1,
+                'w-44': step !== 3,
               }
             )}
           >

@@ -1,4 +1,4 @@
-import { gql } from "@apollo/client";
+import { gql } from '@apollo/client';
 
 export const GET_ACCOUNT_DOMAINS = gql`
   query GetUsersDomains(
@@ -10,8 +10,10 @@ export const GET_ACCOUNT_DOMAINS = gql`
       registrations(orderBy: $orderBy, orderDirection: $orderDirection) {
         id
         domain {
+          id
           name
           labelName
+          labelhash
         }
         expiryDate
       }

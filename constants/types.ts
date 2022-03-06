@@ -2,6 +2,7 @@ export interface DomainProps {
   id: string;
   name: string;
   labelName: string;
+  labelhash: string;
 }
 
 export interface TextRecords {
