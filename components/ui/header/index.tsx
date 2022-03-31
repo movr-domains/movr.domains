@@ -6,7 +6,7 @@ import React, { Fragment, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
-import HeaderSearch from './search-form';
+import Search from './search-form';
 import Dropdown from './dropdown';
 
 export default function Header() {
@@ -75,7 +75,7 @@ export default function Header() {
             <div className='col-span-6'>
               <AnimatePresence>
                 {!isHomePage ? (
-                  <HeaderSearch />
+                  <Search />
                 ) : (
                   // to hold up nav when on home page
                   <div className='h-14' />
