@@ -1,6 +1,6 @@
 import Web3Context from '@components/wallet/context';
 import { ethers } from 'ethers';
-import { useCallback, useContext, useEffect } from 'react';
+import { useCallback, useContext } from 'react';
 import { web3Modal } from '@lib/providers';
 import getName from '@lib/get-name';
 

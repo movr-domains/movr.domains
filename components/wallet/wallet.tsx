@@ -47,7 +47,6 @@ export default function Wallet({
             ? `${state.movrName}.movr`
             : shortenHex(state.address)}
         </span>
-
         <div
           className={classNames('transform transition duration-200', {
             '-rotate-180': dropdownOpen,
