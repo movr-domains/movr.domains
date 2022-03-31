@@ -22,7 +22,7 @@ export default function RegistrationButton({
   return (
     <motion.button
       className={classNames(
-        'px-5 py-0.5 uppercase font-bold border border-green border-opacity-50 relative hover:border-opacity-100 hover:bg-green hover:text-black transition-colors durations-200',
+        'px-3 py-0.5 uppercase font-bold border border-green border-opacity-50 relative hover:border-opacity-100 hover:bg-green hover:text-black transition-colors durations-200 rounded-sm',
         {
           'border-0 hover:bg-black hover:text-white': step == 2,
         }

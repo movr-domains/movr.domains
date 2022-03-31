@@ -1,8 +1,12 @@
 import { BigNumber, ethers } from 'ethers';
 import addresses from 'constants/contracts';
+import MOVRRegistryABI from '@lib/abis/MOVRRegistry.json';
 import MOVRRegistrarControllerABI from '@lib/abis/MOVRRegistrarControllerABI.json';
+import PublicResolver from '@lib/abis/PublicResolver.json';
 import { moonbeamDevProvider, moonbaseProvider } from './providers';
 import crypto from 'crypto';
+import contractLog from './dev/console-contract';
+import { namehash } from 'ethers/lib/utils';
 
 function randomSecret() {
   return '0x' + crypto.randomBytes(32).toString('hex');
@@ -14,6 +18,53 @@ function controllerContract(signer?: any) {
     addresses.movrRegistrar,
     MOVRRegistrarControllerABI.abi,
     signer ? signer : provider
+  );
+}
+
+function registryContract(signer?: any) {
+  const provider = moonbaseProvider;
+  return new ethers.Contract(
+    addresses.movrRegistrar,
+    MOVRRegistryABI.abi,
+    signer ? signer : provider
+  );
+}
+
+function resolverContract(signer?: any) {
+  const provider = moonbaseProvider;
+  return new ethers.Contract(
+    addresses.resolver,
+    PublicResolver.abi,
+    signer ? signer : provider
+  );
+}
+
+export async function createSubdomain(
+  signer: any,
+  node: string,
+  label: string,
+  owner: string,
+  resolver: string,
+  ttl: string
+) {
+  const registry = registryContract(signer);
+  contractLog(registry);
+  const create = registry.createSubnodeRecord(
+    node,
+    label,
+    owner,
+    resolver,
+    ttl
+  );
+}
+
+export async function checkOwner() {
+  const registry = registryContract();
+  contractLog(registry);
+  console.log(
+    await registry.owner(
+      '0x3986d9c9dd0f692189e79f60f9542dd59696d1f68d740fad027632257449f806'
+    )
   );
 }
 
@@ -135,3 +186,36 @@ export const registerName = async (
     return { message: 'Something went wrong', error };
   }
 };
+
+export async function setText(
+  provider: any,
+  name: string,
+  key: string,
+  value: string
+) {
+  const signer = provider.getSigner();
+  const resolver = resolverContract(signer);
+  const node = namehash(name);
+  console.log(node, name);
+
+  try {
+    const setText = await resolver.setText(node, key, value);
+    console.log('Setting Text');
+    await setText.wait();
+    return { success: true };
+  } catch (error) {
+    return { message: 'Something went wrong', error };
+  }
+}
+
+export async function resolveText(name: string, key: string) {
+  const resolver = resolverContract();
+  const node = namehash(name);
+
+  try {
+    const getText = await resolver.text(node, key);
+    return getText;
+  } catch (error) {
+    console.log(error);
+  }
+}

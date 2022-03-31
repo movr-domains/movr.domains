@@ -28,7 +28,6 @@ function WalletState({ children }: { children: React.ReactChild }) {
   useEffect(() => {
     if (state?.provider?.on) {
       const handleAccountsChanged = (accounts: string[]) => {
-        console.log('accountsChanged', accounts);
         dispatch({
           type: 'SET_ADDRESS',
           address: accounts[0],

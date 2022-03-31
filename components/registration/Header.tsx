@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 export default function Header({ name, step }: { name: string; step: number }) {
   return (
     <div className='mb-5'>
-      <h1 className='text-4xl uppercase font-bold flex flex-col text-yellow mb-1 bg-black relative z-10 space-x-3 break-words leading-5'>
+      <h1 className='text-4xl uppercase font-bold flex flex-col text-yellow mb-1 bg-[#0d0d0d] relative z-10 space-x-3 break-words leading-5'>
         {step === 1 && (
           <motion.span
             key='register'

@@ -47,25 +47,29 @@ export default function Header() {
     <Fragment>
       <header
         className={classNames(
-          'bg-black relative z-40 transition-colors duration-300',
+          'bg-[#3C3C3C] relative z-40 transition-colors duration-300 drop-shadow-[6px_5px_4px_rgba(0,0,0,.25)] rounded-r-sm',
           {
             'bg-opacity-0': isHomePage,
           }
         )}
+        style={{ width: '95%', marginTop: '15px' }}
       >
         <div className='px-16'>
-          <div className='grid grid-cols-12 gap-5 h-20'>
+          <div className='grid grid-cols-12 gap-5'>
             <AnimatePresence>
-              {!isHomePage && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ delay: 0.3 }}
-                  className='flex items-center'
+              <motion.div
+                initial={{ y: -100 }}
+                animate={{ y: 0 }}
+                exit={{ y: -100 }}
+                transition={{ delay: isHomePage ? 1 : 1, bounce: 0 }}
+                className='flex items-center relative'
+              >
+                <div
+                  className='bg-[#202020] px-2 flex items-end drop-shadow-[-3.5px_3.5px_2px_rgba(0,0,0,.25)] rounded-b-sm'
+                  style={{ height: '145%' }}
                 >
                   <Link href='/'>
-                    <a className='h-full flex items-center'>
+                    <a className=''>
                       <Image
                         src='/logos/short_white.svg'
                         height='47px'
@@ -74,8 +78,8 @@ export default function Header() {
                       />
                     </a>
                   </Link>
-                </motion.div>
-              )}
+                </div>
+              </motion.div>
             </AnimatePresence>
             <div className='flex items-center col-span-2 col-start-2'>
               <Wallet
@@ -86,13 +90,13 @@ export default function Header() {
             </div>
             <div className='col-span-6'>
               <AnimatePresence>
-                {!isHomePage && (
+                {!isHomePage ? (
                   <motion.form
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ delay: 0.4 }}
-                    className='flex py-4 h-full'
+                    className='flex py-2 h-full'
                     onSubmit={(e: FormEvent) => {
                       e.preventDefault();
                       const search = searchValue.trim();
@@ -110,7 +114,7 @@ export default function Header() {
                       onBlur={() => setFocused(false)}
                       placeholder='Search names...'
                       className={classNames(
-                        'border border-green bg-black h-full px-3 py-1 text-lg w-full text-white outline-none transition duration-300',
+                        'bg-[#2D2D2D] h-full px-3 py-3 w-full text-white outline-none transition duration-300 rounded-l-sm',
                         {
                           'border-opacity-50': !focused,
                           'border-opacity-100': focused,
@@ -119,7 +123,7 @@ export default function Header() {
                     />
                     <button
                       className={classNames(
-                        'border border-green border-l-0 px-5 uppercase font-bold font-cabin tracking-wider text-sm hover:text-green transition duration-300',
+                        'border-l-0 bg-[#2D2D2D] px-3 uppercase font-bold font-cabin tracking-wider text-xs hover:bg-green hover:bg-opacity-80 transition duration-300 rounded-r-sm',
                         {
                           'border-opacity-50': !focused,
                           'border-opacity-100': focused,
@@ -129,6 +133,8 @@ export default function Header() {
                       Search
                     </button>
                   </motion.form>
+                ) : (
+                  <div className='h-14' />
                 )}
               </AnimatePresence>
             </div>
@@ -165,7 +171,7 @@ export default function Header() {
                 )}
                 <li
                   className={classNames('nav-list-item', {
-                    'border-opacity-100': domainsOpen,
+                    'text-yellow': domainsOpen,
                   })}
                 >
                   <span
@@ -223,7 +229,7 @@ function DomainList({ open, address, isHomePage }: DomainListProps) {
           animate={!isHomePage ? { y: 0 } : { opacity: 1 }}
           exit={!isHomePage ? { y: -150 } : { opacity: 0 }}
           transition={{ duration: 0.3, bounce: 0 }}
-          className='relative px-10 py-2 bg-[#111111] text-white text-base font-normal normal-case border border-opacity-20 border-yellow w-auto z-20'
+          className='relative px-10 py-2 bg-[#111111] text-white text-base font-normal normal-case w-auto z-20'
         >
           {!loading && !error ? (
             <ul>

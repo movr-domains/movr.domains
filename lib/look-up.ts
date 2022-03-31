@@ -2,7 +2,7 @@ import addresses from 'constants/contracts';
 import { ethers } from 'ethers';
 // @ts-ignore
 import namehash from 'eth-ens-namehash';
-import ENSRegistry from '@lib/abis/ENSRegistry.json';
+import ENSRegistry from '@lib/abis/MOVRRegistrarControllerABI.json';
 import { moonbaseProvider } from './providers';
 
 const lookUpOwner = async (name: string) => {
@@ -15,7 +15,7 @@ const lookUpOwner = async (name: string) => {
     provider
   );
 
-  const owner = await registry.owner(namehash.hash(name + '.movr'));
+  const owner = await registry.owner(namehash.hash(`${name}.movr`));
   return owner !== '0x0000000000000000000000000000000000000000' ? owner : null;
 };
 
