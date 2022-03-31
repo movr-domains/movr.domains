@@ -29,6 +29,7 @@ export default function Header() {
 
   return (
     <Fragment>
+      <div className='relative z-40 bg-[#0d0d0d]' style={{ height: '15px' }} />
       <header
         className={classNames(
           'bg-[#3C3C3C] relative z-40 transition-colors duration-300 drop-shadow-[6px_5px_4px_rgba(0,0,0,.25)] rounded-r-sm',
@@ -36,7 +37,7 @@ export default function Header() {
             'bg-opacity-0': isHomePage,
           }
         )}
-        style={{ width: '95%', marginTop: '15px' }}
+        style={{ width: '95%' }}
       >
         <div className='px-16'>
           <div className='grid grid-cols-12 gap-5'>

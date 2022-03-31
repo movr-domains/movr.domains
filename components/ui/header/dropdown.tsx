@@ -76,14 +76,16 @@ export default function Dropdown({
             </span>
           </li>
         </ul>
-        {state.address && (
+      </motion.div>
+      {state.address && (
+        <div className='col-start-3 col-span-3 ml-6 absolute'>
           <DomainList
             open={domainsOpen}
             address={state.address}
             isHomePage={isHomePage}
           />
-        )}
-      </motion.div>
+        </div>
+      )}
     </div>
   );
 }
