@@ -22,6 +22,7 @@ import {
   RiLogoutBoxLine,
 } from 'react-icons/ri';
 import { searchedDomain } from 'apollo/reactiveVars';
+import useWalletActions from '@hooks/useWalletActions';
 
 export default function Header() {
   const [focused, setFocused] = useState(false);
@@ -29,6 +30,7 @@ export default function Header() {
   const [searchValue, setSearchValue] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [domainsOpen, setDomainsOpen] = useState(false);
+  const { disconnect } = useWalletActions();
   const router = useRouter();
 
   useEffect(() => {
@@ -185,7 +187,7 @@ export default function Header() {
                 <li className='nav-list-item'>
                   <span
                     onClick={() => {
-                      dispatch({ type: 'RESET_WEB3_PROVIDER' });
+                      disconnect();
                       setDropdownOpen(false);
                     }}
                     className='flex items-center space-x-2'

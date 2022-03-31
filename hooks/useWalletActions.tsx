@@ -38,6 +38,8 @@ export default function useWalletActions() {
   const disconnect = useCallback(
     async function () {
       await web3Modal.clearCachedProvider();
+      window.localStorage.removeItem('user');
+
       if (
         state.provider?.disconnect &&
         typeof state.provider.disconnect === 'function'
@@ -47,7 +49,6 @@ export default function useWalletActions() {
       dispatch({
         type: 'RESET_WEB3_PROVIDER',
       });
-      window.localStorage.removeItem('user');
     },
     [state?.provider, dispatch]
   );
