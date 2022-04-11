@@ -1,5 +1,9 @@
-import local from "./local.json";
+import local from './local.json';
+import testnet from './testnet.json';
 
-const addresses = process.env.NODE_ENV === "development" ? local : local;
+const network = process.env.NETWORK;
+
+const addresses =
+  network === 'LOCAL' ? local : network === 'TESTNET' ? testnet : local;
 
 export default addresses;

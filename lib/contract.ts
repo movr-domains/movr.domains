@@ -3,17 +3,19 @@ import addresses from 'constants/contracts';
 import MOVRRegistryABI from '@lib/abis/MOVRRegistry.json';
 import MOVRRegistrarControllerABI from '@lib/abis/MOVRRegistrarControllerABI.json';
 import PublicResolver from '@lib/abis/PublicResolver.json';
-import { moonbeamDevProvider, moonbaseProvider } from './providers';
+import getProvider from './providers';
 import crypto from 'crypto';
 import contractLog from './dev/console-contract';
 import { namehash } from 'ethers/lib/utils';
+
+const provider = getProvider();
 
 function randomSecret() {
   return '0x' + crypto.randomBytes(32).toString('hex');
 }
 
 function controllerContract(signer?: any) {
-  const provider = moonbeamDevProvider;
+  process.env.NETWORK == 'LOCAL' ? addresses : addresses;
   return new ethers.Contract(
     addresses.movrRegistrar,
     MOVRRegistrarControllerABI.abi,
@@ -22,7 +24,6 @@ function controllerContract(signer?: any) {
 }
 
 function registryContract(signer?: any) {
-  const provider = moonbeamDevProvider;
   return new ethers.Contract(
     addresses.movrRegistrar,
     MOVRRegistryABI.abi,
@@ -31,7 +32,6 @@ function registryContract(signer?: any) {
 }
 
 function resolverContract(signer?: any) {
-  const provider = moonbeamDevProvider;
   return new ethers.Contract(
     addresses.resolver,
     PublicResolver.abi,

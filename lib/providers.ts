@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
 import Web3Modal from 'web3modal';
 
-export const moonbaseProvider = new ethers.providers.StaticJsonRpcProvider(
+const moonbaseProvider = new ethers.providers.StaticJsonRpcProvider(
   'https://rpc.api.moonbase.moonbeam.network',
   {
     chainId: 1287,
@@ -9,13 +9,24 @@ export const moonbaseProvider = new ethers.providers.StaticJsonRpcProvider(
   }
 );
 
-export const moonbeamDevProvider = new ethers.providers.StaticJsonRpcProvider(
+const moonbeamDevProvider = new ethers.providers.StaticJsonRpcProvider(
   'http://127.0.0.1:9933',
   {
     chainId: 1281,
     name: 'moonbeam-dev-node',
   }
 );
+
+export default function getProvider() {
+  const network = process.env.NETWORK;
+  if (network === 'LOCAL') {
+    return moonbeamDevProvider;
+  } else if (network === 'TESTNET') {
+    return moonbaseProvider;
+  } else {
+    return null;
+  }
+}
 
 export let web3Modal: any;
 if (typeof window !== 'undefined') {
