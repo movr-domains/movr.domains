@@ -4,7 +4,7 @@ import React from 'react';
 export default function ProgressBar({ time }: { time: number }) {
   const timeLeft = (100 / 60) * time;
   const percentageLeft = 100 - timeLeft;
-  console.log('progress', percentageLeft);
+
   return (
     <motion.div
       className='h-2 bg-green shadow rounded-sm'

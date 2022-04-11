@@ -18,7 +18,7 @@ let subDomainRegistrars = {};
 
 export default function ManageName() {
   const { state } = useContext(Web3Context);
-  // const { data } = useQuery(gql``);
+  const { data } = useQuery(gql``);
 
   const [domainInfo, setDomainInfo] = useState<DomainInfo>({
     reverseRegistrant: '',
@@ -54,7 +54,7 @@ export default function ManageName() {
   const resolve = async () => {
     if (typeof name !== 'string') return;
     const resolved = await resolveText(`${name}.movr`, 'twitter');
-    console.log('url: ', resolved);
+    console.log('twitter: ', resolved);
   };
 
   return (

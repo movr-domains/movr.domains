@@ -13,7 +13,7 @@ function randomSecret() {
 }
 
 function controllerContract(signer?: any) {
-  const provider = moonbaseProvider;
+  const provider = moonbeamDevProvider;
   return new ethers.Contract(
     addresses.movrRegistrar,
     MOVRRegistrarControllerABI.abi,
@@ -22,7 +22,7 @@ function controllerContract(signer?: any) {
 }
 
 function registryContract(signer?: any) {
-  const provider = moonbaseProvider;
+  const provider = moonbeamDevProvider;
   return new ethers.Contract(
     addresses.movrRegistrar,
     MOVRRegistryABI.abi,
@@ -31,7 +31,7 @@ function registryContract(signer?: any) {
 }
 
 function resolverContract(signer?: any) {
-  const provider = moonbaseProvider;
+  const provider = moonbeamDevProvider;
   return new ethers.Contract(
     addresses.resolver,
     PublicResolver.abi,

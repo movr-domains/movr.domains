@@ -2,8 +2,10 @@ import { Header } from '@components/ui';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { LookUp } from '@components/registration';
+import { namehash } from 'ethers/lib/utils';
 
 export default function Home() {
+  console.log(namehash('movr'));
   return (
     <div className='h-screen flex items-center bg-opacity-100'>
       <div className='fixed top-0 w-full left-0'>

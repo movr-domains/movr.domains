@@ -10,7 +10,7 @@ export const moonbaseProvider = new ethers.providers.StaticJsonRpcProvider(
 );
 
 export const moonbeamDevProvider = new ethers.providers.StaticJsonRpcProvider(
-  'https://rpc.api.moonbase.moonbeam.network',
+  'http://127.0.0.1:9933',
   {
     chainId: 1281,
     name: 'moonbeam-dev-node',
