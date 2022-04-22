@@ -65,6 +65,6 @@ export default async function metaDataImage(
   const buffer = Buffer.from(base64, 'base64');
 
   res.setHeader('Content-Type', 'image/svg+xml');
-  res.setHeader('Content-Length', buffer.length);
-  return res.status(200).end(buffer);
+  // res.setHeader('Content-Length', buffer.length);
+  return res.send(buffer);
 }
