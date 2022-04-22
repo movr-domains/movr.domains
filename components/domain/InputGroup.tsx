@@ -30,7 +30,8 @@ export default function InputGroup({
     if (active) {
       setCurrentFields(fields);
     }
-  }, [active]);
+    // @ts-ignore
+  }, [active, fields, setCurrentFields]);
 
   return (
     <div className='p-5'>
