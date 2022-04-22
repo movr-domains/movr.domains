@@ -16,7 +16,7 @@ export default function DomainCard({ domain, expiration }: DomainCardProps) {
           <div className='flex justify-center'>
             {domain.id && (
               <Image
-                src={`http://localhost:8000/testnet/${domain.labelhash}/image`}
+                src={`${process.env.BASE_URL}/api/metadata/${domain.labelhash}/image`}
                 height='300px'
                 width='300px'
                 alt={`${domain.labelName} domain`}

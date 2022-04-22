@@ -5,6 +5,7 @@ module.exports = {
   },
   env: {
     NETWORK: process.env.NETWORK,
+    BASE_URL: process.env.BASE_URL,
   },
   reactStrictMode: true,
 };

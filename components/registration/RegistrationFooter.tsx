@@ -1,5 +1,6 @@
 import React from 'react';
 import { ProgressBar, RegistrationButton } from '.';
+import { motion } from 'framer-motion';
 
 interface Props {
   setOpenQuestions: (boolean: boolean) => void;
@@ -49,7 +50,19 @@ export default function RegistrationFooter({
             </span>
           </div>
         )}
-        {registering && <span>Registering Name</span>}
+        {registering && (
+          <motion.span
+            animate={{ y: -2 }}
+            transition={{
+              repeat: Infinity,
+              duration: 2,
+              repeatType: 'reverse',
+            }}
+            className='uppercase text-sm'
+          >
+            Registering Name
+          </motion.span>
+        )}
         <RegistrationButton
           step={step}
           text={

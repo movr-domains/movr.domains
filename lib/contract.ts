@@ -2,6 +2,7 @@ import { BigNumber, ethers } from 'ethers';
 import addresses from 'constants/contracts';
 import MOVRRegistryABI from '@lib/abis/MOVRRegistry.json';
 import MOVRRegistrarControllerABI from '@lib/abis/MOVRRegistrarControllerABI.json';
+import ReverseRegistrar from '@lib/abis/ReverseRegistrar.json';
 import PublicResolver from '@lib/abis/PublicResolver.json';
 import getProvider from './providers';
 import crypto from 'crypto';
@@ -15,7 +16,6 @@ function randomSecret() {
 }
 
 function controllerContract(signer?: any) {
-  process.env.NETWORK == 'LOCAL' ? addresses : addresses;
   return new ethers.Contract(
     addresses.movrRegistrar,
     MOVRRegistrarControllerABI.abi,
@@ -31,7 +31,7 @@ function registryContract(signer?: any) {
   );
 }
 
-function resolverContract(signer?: any) {
+export function resolverContract(signer?: any) {
   return new ethers.Contract(
     addresses.resolver,
     PublicResolver.abi,
@@ -60,7 +60,7 @@ export async function createSubdomain(
 
 export async function checkOwner() {
   const registry = registryContract();
-  contractLog(registry);
+
   console.log(
     await registry.owner(
       '0x3986d9c9dd0f692189e79f60f9542dd59696d1f68d740fad027632257449f806'
@@ -218,4 +218,30 @@ export async function resolveText(name: string, key: string) {
   } catch (error) {
     console.log(error);
   }
+}
+
+export async function getName(wallet: string) {
+  const reverseRegistrar = new ethers.Contract(
+    addresses.reverseRegistrar,
+    ReverseRegistrar.abi,
+    provider!
+  );
+
+  const resolver = new ethers.Contract(
+    addresses.resolver,
+    PublicResolver.abi,
+    provider!
+  );
+
+  const reverseNode = await reverseRegistrar.node(wallet);
+
+  return await resolver.name(reverseNode);
+}
+
+export async function getResolver() {
+  const hash = namehash('look');
+  console.log(hash);
+  const registry = registryContract();
+  const resolver = await registry.resolver(hash);
+  return resolver;
 }
