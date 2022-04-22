@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 module.exports = {
   images: {
-    domains: ['localhost'],
+    domains: ['localhost', 'testnet.movr.domains', 'movr.domains'],
   },
   env: {
     NETWORK: process.env.NETWORK,
