@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 // @ts-ignore
 import namehash from 'eth-ens-namehash';
 import ENSRegistry from '@lib/abis/MOVRRegistrarControllerABI.json';
-import { moonbaseProvider } from './providers';
+import moonbaseProvider from './providers';
 import client from './apollo';
 import { gql } from '@apollo/client';
 

@@ -19,7 +19,6 @@ const moonbeamDevProvider = new ethers.providers.StaticJsonRpcProvider(
 
 export default function getProvider() {
   const network = process.env.NETWORK;
-  console.log({ network });
   if (network === 'LOCAL') {
     return moonbeamDevProvider;
   } else if (network === 'TESTNET') {
