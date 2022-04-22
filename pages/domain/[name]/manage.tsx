@@ -14,16 +14,10 @@ import { MdNotes, MdInfo } from 'react-icons/md';
 import { ethers } from 'ethers';
 import { GetServerSidePropsContext } from 'next';
 import client from '@lib/apollo';
-import { GET_REGISTRATION } from 'graphql/queries';
+import { GET_REGISTRATION, GET_RESOLVER_BY_ID } from 'graphql/queries';
 import dayjs from 'dayjs';
 
 let subDomainRegistrars = {};
-
-const fakeData = {
-  resolver: {
-    texts: ['twitter', 'url'],
-  },
-};
 
 interface ManageNameProps {
   name: string;
@@ -46,14 +40,15 @@ interface ManageNameProps {
       };
     };
   };
+  textRecords: string[];
 }
 
 export default function ManageName({
   name,
   registrationInfo,
+  textRecords,
 }: ManageNameProps) {
   const { state } = useContext(Web3Context);
-  console.log(registrationInfo);
 
   const [domainInfo, setDomainInfo] = useState<DomainInfo>({
     parent: '',
@@ -104,22 +99,22 @@ export default function ManageName({
     async function getTexts() {
       const newFields: any = {};
 
-      for (let text of fakeData.resolver.texts) {
-        const resolvedText = await resolve(text);
-        newFields[text] = resolvedText;
+      for (let record of textRecords) {
+        const resolvedText = await resolve(record);
+        newFields[record] = resolvedText;
       }
       setTextFields((text) => ({ ...text, ...newFields }));
     }
 
-    if (fakeData) {
+    if (textRecords) {
       getTexts();
     }
     // @ts-ignore
-  }, [name]);
+  }, [name, textRecords]);
 
   const setRecord = () => {
     if (typeof name !== 'string') return;
-    setText(state.web3Provider, `${name}.movr`, 'url', 'https://natelook.com');
+    setText(state.web3Provider, `${name}.movr`, 'twitter', 'caity');
   };
 
   const updateRecords = async () => {
@@ -226,7 +221,22 @@ export async function getServerSideProps({ query }: GetServerSidePropsContext) {
     variables: { labelName: `${query.name}` },
   });
 
+  const { data: texts } = await client.query({
+    query: GET_RESOLVER_BY_ID,
+    variables: { id: data.registrations[0].domain.id },
+  });
+
+  let textRecords = null;
+
+  if (texts.resolvers.length !== 0) {
+    textRecords = texts.resolvers[0].texts;
+  }
+
   return {
-    props: { name: query.name, registrationInfo: data.registrations[0] },
+    props: {
+      name: query.name,
+      registrationInfo: data.registrations[0],
+      textRecords,
+    },
   };
 }

@@ -30,9 +30,7 @@ export default async function metaDataImage(
     query: GET_DOMAINS_BY_LABELHASH,
     variables: { tokenId },
   });
-  console.log(data);
 
-  // TODO: Don't forget to get the name from the request object
   if (!data?.domains[0]) {
     return res.status(404).json({ error: 'No token found with that ID' });
   }

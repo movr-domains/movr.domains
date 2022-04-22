@@ -19,6 +19,8 @@ export default function Wallet({
   const { state } = useContext(Web3Context);
   const { connect, switchChainIds } = useWalletActions();
 
+  const correctChain = state.chainId === parseInt(process.env.CHAIN_ID!);
+
   if (!state.address) {
     return (
       <div className='flex'>
@@ -35,31 +37,42 @@ export default function Wallet({
   return (
     <div
       className='flex flex-col cursor-pointer select-none relative'
-      onClick={handleClick}
+      onClick={correctChain ? handleClick : switchChainIds}
     >
-      <span className='text-xs font-cabin tracking-wider uppercase text-[#a4a4a4] leading-0 block -mb-2'>
-        Connected As
-      </span>
+      {correctChain ? (
+        <React.Fragment>
+          <span className='text-xs font-cabin tracking-wider uppercase text-[#a4a4a4] leading-0 block -mb-2'>
+            Connected As
+          </span>
 
-      <div className='flex flex-end'>
-        <span className='font-cabin tracking-wider'>
-          {state.movrName
-            ? `${state.movrName}.movr`
-            : shortenHex(state.address)}
-        </span>
-        <div
-          className={classNames('transform transition duration-200', {
-            '-rotate-180': dropdownOpen,
-          })}
-        >
-          <Image
-            src='/arrow.svg'
-            height='8.5px'
-            width='17px'
-            alt='arrow down'
-          />
+          <div className='flex flex-end'>
+            <span className='font-cabin tracking-wider'>
+              {state.movrName
+                ? `${state.movrName}.movr`
+                : shortenHex(state.address)}
+            </span>
+            <div
+              className={classNames('transform transition duration-200', {
+                '-rotate-180': dropdownOpen,
+              })}
+            >
+              <Image
+                src='/arrow.svg'
+                height='8.5px'
+                width='17px'
+                alt='arrow down'
+              />
+            </div>
+          </div>
+        </React.Fragment>
+      ) : (
+        <div>
+          <span className='text-xs font-cabin tracking-wider uppercase text-[#a4a4a4] leading-0 block -mb-2'>
+            Incorrect Chain
+          </span>
+          <span className='font-cabin uppercase'>Switch Networks</span>
         </div>
-      </div>
+      )}
     </div>
   );
 }

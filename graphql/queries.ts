@@ -57,6 +57,7 @@ export const GET_REGISTRATION = gql`
       }
       expiryDate
       domain {
+        id
         parent {
           id
           owner {
@@ -109,6 +110,14 @@ export const GET_DOMAINS_BY_LABELHASH = gql`
       resolver {
         texts
       }
+    }
+  }
+`;
+export const GET_RESOLVER_BY_ID = gql`
+  query getResolverById($id: String!) {
+    resolvers(first: 5, where: { domain: $id }) {
+      id
+      texts
     }
   }
 `;
