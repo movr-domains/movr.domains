@@ -2,7 +2,6 @@ import { Header } from '@components/ui';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { LookUp } from '@components/registration';
-import { namehash } from 'ethers/lib/utils';
 
 export default function Home() {
   return (
