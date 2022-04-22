@@ -16,7 +16,7 @@ export default function DomainCard({ domain, expiration }: DomainCardProps) {
         <div className='bg-black transition duration-300 hover:border-opacity-100 relative'>
           <div className='flex justify-center'>
             {domain.id && (
-              <Image
+              <img
                 src={`${process.env.BASE_URL}/api/metadata/${domain.labelhash}/image`}
                 height='300px'
                 width='300px'
