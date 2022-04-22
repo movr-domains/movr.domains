@@ -9,6 +9,7 @@ interface DomainCardProps {
 }
 
 export default function DomainCard({ domain, expiration }: DomainCardProps) {
+  console.log(`${process.env.BASE_URL}/api/metadata/${domain.labelhash}/image`);
   return (
     <Link href={`/domain/${domain.labelName}/manage`} key={domain.id}>
       <a>

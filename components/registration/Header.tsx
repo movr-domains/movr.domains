@@ -42,7 +42,7 @@ export default function Header({ name, step }: { name: string; step: number }) {
           </motion.span>
         )}
       </h1>
-      <motion.span className='text-5xl uppercase font-bold  text-white block m-0'>
+      <motion.span className='text-5xl uppercase font-bold  text-white block m-0 overflow-x-scroll pb-0.5'>
         {name}.movr
       </motion.span>
       <AnimatePresence>
