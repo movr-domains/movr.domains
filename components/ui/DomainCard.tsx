@@ -13,7 +13,7 @@ export default function DomainCard({ domain, expiration }: DomainCardProps) {
   return (
     <Link href={`/domain/${domain.labelName}/manage`} key={domain.id}>
       <a>
-        <div className='bg-black transition duration-300 hover:border-opacity-100 relative'>
+        <div className='bg-black transition duration-300 hover:border-opacity-100 p-3 rounded drop-shadow relative'>
           <div className='flex justify-center'>
             {domain.id && (
               <Image

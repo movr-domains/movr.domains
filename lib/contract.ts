@@ -15,7 +15,7 @@ function randomSecret() {
   return '0x' + crypto.randomBytes(32).toString('hex');
 }
 
-function controllerContract(signer?: any) {
+export function controllerContract(signer?: any) {
   return new ethers.Contract(
     addresses.movrRegistrar,
     MOVRRegistrarControllerABI.abi,
@@ -23,9 +23,9 @@ function controllerContract(signer?: any) {
   );
 }
 
-function registryContract(signer?: any) {
+export function registryContract(signer?: any) {
   return new ethers.Contract(
-    addresses.movrRegistrar,
+    addresses.registry,
     MOVRRegistryABI.abi,
     signer ? signer : provider
   );
@@ -58,14 +58,13 @@ export async function createSubdomain(
   );
 }
 
-export async function checkOwner() {
+export async function checkOwner(name: string) {
+  const node = ethers.utils.namehash(name);
   const registry = registryContract();
 
-  console.log(
-    await registry.owner(
-      '0x3986d9c9dd0f692189e79f60f9542dd59696d1f68d740fad027632257449f806'
-    )
-  );
+  const owner = await registry.owner(node);
+
+  return owner;
 }
 
 export async function claimName(

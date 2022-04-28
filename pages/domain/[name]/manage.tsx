@@ -1,23 +1,24 @@
 import type { DomainInfo, TextRecords } from 'constants/types';
 import React, { useContext, useEffect, useState } from 'react';
 import { InputGroup } from '@components/domain';
-import { useRouter } from 'next/router';
 import {
-  checkOwner,
+  getResolver,
+  registryContract,
   resolverContract,
   resolveText,
   setText,
 } from '@lib/contract';
 import { Web3Context } from '@components/wallet';
-import { gql, useQuery } from '@apollo/client';
-import { MdNotes, MdInfo } from 'react-icons/md';
-import { ethers } from 'ethers';
+import { MdNotes, MdInfo, MdSegment } from 'react-icons/md';
 import { GetServerSidePropsContext } from 'next';
 import client from '@lib/apollo';
 import { GET_REGISTRATION, GET_RESOLVER_BY_ID } from 'graphql/queries';
 import dayjs from 'dayjs';
-
-let subDomainRegistrars = {};
+import { keccak256, namehash } from 'ethers/lib/utils';
+import { AnimatePresence, motion } from 'framer-motion';
+import contractLog from '@lib/dev/console-contract';
+import { ethers } from 'ethers';
+import utils from 'web3-utils';
 
 interface ManageNameProps {
   name: string;
@@ -42,6 +43,8 @@ interface ManageNameProps {
   };
   textRecords: string[];
 }
+
+const labelhash = (label: string) => utils.sha3(label);
 
 export default function ManageName({
   name,
@@ -73,6 +76,9 @@ export default function ManageName({
   });
 
   const [currentFields, setCurrentFields] = useState<TextRecords | null>(null);
+  const [newSubdomain, setNewSubdomain] = useState('');
+  const [addingSubdomain, setAddingSubdomain] = useState(false);
+  const [subdomainProcessing, setSubdomainProcessing] = useState(false);
 
   useEffect(() => {
     if (registrationInfo) {
@@ -114,7 +120,7 @@ export default function ManageName({
 
   const setRecord = () => {
     if (typeof name !== 'string') return;
-    setText(state.web3Provider, `${name}.movr`, 'twitter', 'caity');
+    setText(state.web3Provider, `${name}.movr`, 'twitter', 'jfdgkfdgjk');
   };
 
   const updateRecords = async () => {
@@ -163,6 +169,26 @@ export default function ManageName({
     console.log(multiCallArray);
   };
 
+  const createSubdomain = async () => {
+    const signer = await state.web3Provider.getSigner();
+
+    const registry = registryContract(signer);
+
+    const node = namehash(`${name}.movr`);
+    const label = labelhash(newSubdomain);
+    const owner = state.address;
+    console.log({ node, label, owner });
+
+    setSubdomainProcessing(true);
+
+    const set = await registry.setSubnodeOwner(node, label, owner);
+    await set.wait();
+
+    setSubdomainProcessing(false);
+
+    // console.log(labelhash('movr'));
+  };
+
   return (
     <React.Fragment>
       <main className='wrapper'>
@@ -198,9 +224,61 @@ export default function ManageName({
           />
         </div>
 
-        <div className='col-span-12 lg:col-span-6'>
-          <h2>Subdomains</h2>
-          <button onClick={() => checkOwner()}>Testing</button>
+        <div className='col-span-12 bg-[#1d1d1d] rounded mb-12'>
+          <div className='p-5'>
+            <div className='flex text-white items-center justify-between'>
+              <div className='flex items-center space-x-2'>
+                <MdSegment />
+                <h2 className='text-3xl uppercase font-bold'>Subdomains</h2>
+              </div>
+              <div>
+                <span
+                  className='block uppercase font-bold text-sm tracking-wider cursor-pointer'
+                  onClick={() => setAddingSubdomain(!addingSubdomain)}
+                >
+                  Add
+                </span>
+              </div>
+            </div>
+            <AnimatePresence>
+              {addingSubdomain && (
+                <motion.div
+                  initial={{ y: -50 }}
+                  animate={{ y: 0 }}
+                  exit={{ y: -50, opacity: 0 }}
+                  className='px-5 mt-5'
+                >
+                  <form
+                    onSubmit={(e: React.FormEvent) => {
+                      e.preventDefault();
+                      createSubdomain();
+                    }}
+                  >
+                    <label
+                      htmlFor='new-subdomain'
+                      className='uppercase text-lg font-bold font-cabin'
+                    >
+                      Add a New Subdomain
+                    </label>
+                    <input
+                      id='new-subdomain'
+                      value={newSubdomain}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setNewSubdomain(e.target.value)
+                      }
+                      placeholder='New Subdomain'
+                      className='border bg-transparent w-full rounded px-3 py-1'
+                    />
+                    <div className='flex justify-end'>
+                      <button className='btn uppercase font-bold'>
+                        Create Subdomain
+                      </button>
+                    </div>
+                  </form>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </main>
       <div className='fixed bottom-2 right-2 flex space-x-3'>
