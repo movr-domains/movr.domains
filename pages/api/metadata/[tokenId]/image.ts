@@ -31,11 +31,18 @@ export default async function metaDataImage(
     variables: { tokenId },
   });
 
+  console.log({ data });
+
   if (!data?.domains[0]) {
     return res.status(404).json({ error: 'No token found with that ID' });
   }
 
-  const name = data.domains[0].name;
+  const MAX_NAME_LENGTH = 32;
+  let name = data.domains[0].name;
+  console.log(name.length > MAX_NAME_LENGTH);
+  if (name.length > MAX_NAME_LENGTH) {
+    name = name.substring(0, MAX_NAME_LENGTH - 3) + '...';
+  }
 
   function generateImage() {
     // detect font size

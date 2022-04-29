@@ -18,7 +18,6 @@ import { keccak256, namehash } from 'ethers/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import contractLog from '@lib/dev/console-contract';
 import { ethers } from 'ethers';
-import utils from 'web3-utils';
 
 interface ManageNameProps {
   name: string;
@@ -44,7 +43,8 @@ interface ManageNameProps {
   textRecords: string[];
 }
 
-const labelhash = (label: string) => utils.sha3(label);
+const labelhash = (label: string) =>
+  ethers.utils.keccak256(ethers.utils.toUtf8Bytes(label));
 
 export default function ManageName({
   name,
@@ -185,8 +185,6 @@ export default function ManageName({
     await set.wait();
 
     setSubdomainProcessing(false);
-
-    // console.log(labelhash('movr'));
   };
 
   return (
