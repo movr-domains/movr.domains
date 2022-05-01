@@ -19,7 +19,14 @@ export default function Wallet({
   const { state } = useContext(Web3Context);
   const { connect, switchChainIds } = useWalletActions();
 
-  const correctChain = state.chainId === parseInt(process.env.CHAIN_ID!);
+  const correctChain = () => {
+    if (typeof state.chainid == null) {
+      // returns true so "Incorrect chain" doesn't flash on screen even though the chain is correct
+      // "Incorrect chain" will quickly appear
+      return true;
+    }
+    return state.chainId === parseInt(process.env.CHAIN_ID!);
+  };
 
   if (!state.address) {
     return (
@@ -37,9 +44,9 @@ export default function Wallet({
   return (
     <div
       className='flex flex-col cursor-pointer select-none relative'
-      onClick={correctChain ? handleClick : switchChainIds}
+      onClick={correctChain() ? handleClick : switchChainIds}
     >
-      {correctChain ? (
+      {correctChain() ? (
         <React.Fragment>
           <span className='text-xs font-cabin tracking-wider uppercase text-[#a4a4a4] leading-0 block -mb-2'>
             Connected As
