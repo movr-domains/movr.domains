@@ -21,7 +21,6 @@ export default function SetPrimaryName({
   const { state, dispatch } = useContext(Web3Context);
 
   const setNameAsPrimary = async (name: string) => {
-    console.log('hi');
     if (name === state.movrName) {
       console.error('Name is already set to primary');
       return;

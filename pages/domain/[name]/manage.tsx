@@ -196,7 +196,7 @@ export default function ManageName({
           </span>
 
           <h1 className='text-5xl text-yellow font-bold uppercase leading-5'>
-            {name}.movr
+            {name}
           </h1>
         </div>
         <div className='col-span-12  bg-[#1d1d1d] rounded'>
@@ -292,9 +292,15 @@ export default function ManageName({
 }
 
 export async function getServerSideProps({ query }: GetServerSidePropsContext) {
+  if (!query.name) {
+    return;
+  }
+
   const { data } = await client.query({
     query: GET_REGISTRATION,
-    variables: { labelName: `${query.name}` },
+    variables: {
+      id: `${namehash(Array.isArray(query.name) ? query.name[0] : query.name)}`,
+    },
   });
 
   const { data: texts } = await client.query({

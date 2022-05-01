@@ -26,7 +26,6 @@ export default function YearSelectButton({
           )}
           onClick={() => {
             onClick();
-            console.log('hello');
           }}
           whileTap={{ y: direction === 'up' ? -10 : 10 }}
           transition={{ bounce: 0, duration: 0.2 }}

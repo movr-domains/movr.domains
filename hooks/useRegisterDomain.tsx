@@ -32,9 +32,8 @@ export default function useRegisterDomain(name: string, years: number) {
       //   setAvailable(isAvailable);
       // }
 
-      // if (!isValid) {
-      //   router.push(`/domain/${name}`);
-      // }
+      if (!isValid) {
+      }
     }
     fetchRent();
   }, [name]);
@@ -53,9 +52,11 @@ export default function useRegisterDomain(name: string, years: number) {
     let secret = secretHash;
 
     if (!secret) {
-      secret = window.localStorage.getItem(`secret-${name}.movr`);
+      secret = window.localStorage.getItem(`secret-${name}`);
       if (!secret) return setError('No secret found');
     }
+
+    const formattedName = name.split('.')[0];
 
     const signer = await state.web3Provider.getSigner();
 
@@ -67,7 +68,7 @@ export default function useRegisterDomain(name: string, years: number) {
 
     try {
       const register = await registrar.register(
-        name,
+        formattedName,
         state.address,
         oneYear * years,
         secret,
@@ -84,20 +85,6 @@ export default function useRegisterDomain(name: string, years: number) {
       console.log(error);
       return { message: 'Something went wrong', error };
     }
-
-    // const register = await registerName(
-    //   state.web3Provider,
-    //   name,
-    //   state.address,
-    //   oneYear * years,
-    //   secret,
-    //   ethers.BigNumber.from(rent).mul(years)
-    // );
-
-    // if (!register.success) {
-    //   setError("Error registering name.");
-    //   return;
-    // }
   };
 
   const claim = async () => {
@@ -116,10 +103,13 @@ export default function useRegisterDomain(name: string, years: number) {
       return;
     }
 
+    const formattedName = name.split('.')[0];
+    console.log(formattedName);
+
     try {
       setClaiming(true);
       const { error, secret, commit } = await claimName(
-        name,
+        formattedName,
         state.web3Provider,
         years * oneYear,
         state.address

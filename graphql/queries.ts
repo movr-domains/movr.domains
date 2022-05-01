@@ -48,8 +48,8 @@ export const GET_ALL_DOMAINS = gql`
 `;
 
 export const GET_REGISTRATION = gql`
-  query getRegistration($labelName: String!) {
-    registrations(where: { labelName: $labelName }) {
+  query getRegistration($id: String!) {
+    registrations(where: { domain: $id }) {
       labelName
       id
       registrant {

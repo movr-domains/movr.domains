@@ -3,11 +3,14 @@ import { motion } from 'framer-motion';
 import { useRouter } from 'next/router';
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { searchedDomain } from 'apollo/reactiveVars';
+import useSearchName from '@hooks/useSearchName';
 
 export default function Search() {
   const [focused, setFocused] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const router = useRouter();
+
+  const { lookUp } = useSearchName();
 
   return (
     <motion.form
@@ -18,9 +21,7 @@ export default function Search() {
       className='flex py-2 h-full'
       onSubmit={(e: FormEvent) => {
         e.preventDefault();
-        const search = searchValue.trim();
-        searchedDomain(search);
-        router.push(`/domain/${search}`);
+        lookUp(searchValue);
       }}
     >
       <input

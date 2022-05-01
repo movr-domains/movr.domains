@@ -9,6 +9,7 @@ interface DomainCardProps {
 }
 
 export default function DomainCard({ domain, expiration }: DomainCardProps) {
+  // DEBUG CONSOLE LOG: For 502 Error
   console.log(`${process.env.BASE_URL}/api/metadata/${domain.labelhash}/image`);
   return (
     <Link href={`/domain/${domain.labelName}/manage`} key={domain.id}>

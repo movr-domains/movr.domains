@@ -9,6 +9,8 @@ import { Header, RegistrationFooter } from '@components/registration';
 import useRegisterDomain from '@hooks/useRegisterDomain';
 import { searchedDomain } from 'apollo/reactiveVars';
 import { StateType } from '@components/wallet';
+import useSearchName from '@hooks/useSearchName';
+import Link from 'next/link';
 
 export default function RegisterPage() {
   const [step, setStep] = useState(1);
@@ -38,6 +40,8 @@ export default function RegisterPage() {
     claim,
     register,
   } = useRegisterDomain(newName, years);
+
+  const { valid, error: nameError } = useSearchName(newName);
 
   useEffect(() => {
     console.log('claimingError', claimingError);
@@ -94,39 +98,55 @@ export default function RegisterPage() {
     <React.Fragment>
       <div className='wrapper'>
         <div className='col-start-3 col-span-8 mt-16'>
-          <div className='flex flex-col'>
-            <Header name={newName} step={step} />
-            <motion.div
-              initial={{
-                y: 0,
-                marginTop: '20px',
-              }}
-              animate={{
-                y: step === 1 ? 0 : -30,
-                marginTop: step !== 1 ? '10px' : '20px',
-              }}
-              transition={{ duration: 0.5 }}
-            >
-              <RegistrationOptions
-                step={step}
-                setYears={(years) => setYears(years)}
-                movrPrice={movrPrice}
-                years={years}
-                basePrice={basePrice}
-                time={time}
-              />
-              <RegistrationFooter
-                setOpenQuestions={setOpenQuestions}
-                step={step}
-                claiming={claiming}
-                time={time}
-                claim={claim}
-                register={register}
-                timerActive={timerActive}
-                registering={registering}
-              />
-            </motion.div>
-          </div>
+          {valid ? (
+            <div className='flex flex-col'>
+              <Header name={newName} step={step} />
+              <motion.div
+                initial={{
+                  y: 0,
+                  marginTop: '20px',
+                }}
+                animate={{
+                  y: step === 1 ? 0 : -30,
+                  marginTop: step !== 1 ? '10px' : '20px',
+                }}
+                transition={{ duration: 0.5 }}
+              >
+                <RegistrationOptions
+                  step={step}
+                  setYears={(years) => setYears(years)}
+                  movrPrice={movrPrice}
+                  years={years}
+                  basePrice={basePrice}
+                  time={time}
+                />
+                <RegistrationFooter
+                  setOpenQuestions={setOpenQuestions}
+                  step={step}
+                  claiming={claiming}
+                  time={time}
+                  claim={claim}
+                  register={register}
+                  timerActive={timerActive}
+                  registering={registering}
+                />
+              </motion.div>
+            </div>
+          ) : (
+            <div className='text-center max-w-lg mx-auto'>
+              <h3 className='text-4xl uppercase font-cabin font-bold text-red-600 mb-4'>
+                Error
+              </h3>
+              <p className='text-xl uppercase'>{nameError}</p>
+              <div className='mt-10'>
+                <Link href='/'>
+                  <a className='font-bold font-cabin uppercase text-xl tracking-wider'>
+                    Search Again
+                  </a>
+                </Link>
+              </div>
+            </div>
+          )}
         </div>
       </div>
       <Modal isOpen={openQuestions} close={() => setOpenQuestions(false)}>

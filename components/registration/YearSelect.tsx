@@ -32,12 +32,11 @@ export default function YearsSelect({
   };
 
   const handleYearsChange = (number: number) => {
-    console.log('hello');
     if (isNaN(years) && number == 1) {
       setYears(1);
       return;
     }
-    console.log(number);
+
     setYears(years + number);
   };
 

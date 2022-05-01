@@ -42,7 +42,6 @@ function WalletState({ children }: { children: React.ReactChild }) {
       };
 
       const handleDisconnect = (error: { code: number; message: string }) => {
-        console.log('disconnect', error);
         window.localStorage.removeItem('user');
         disconnect();
       };

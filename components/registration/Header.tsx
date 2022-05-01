@@ -43,7 +43,7 @@ export default function Header({ name, step }: { name: string; step: number }) {
         )}
       </h1>
       <motion.span className='text-5xl uppercase font-bold  text-white block m-0 overflow-clip pb-0.5'>
-        {name}.movr
+        {name}
       </motion.span>
       <AnimatePresence>
         {step === 1 && (
