@@ -5,6 +5,7 @@ module.exports = {
       'localhost',
       'testnet.movr.domains',
       'movr.domains',
+      'metadata.movr.domains',
       'whispering-journey-12465.herokuapp.com',
     ],
   },
