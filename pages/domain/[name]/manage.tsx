@@ -181,7 +181,7 @@ export default function ManageName({ domain }: ManageNameProps) {
 
     const registry = registryContract(signer);
 
-    const node = namehash(`${name}.movr`);
+    const node = namehash(domain.name);
     const label = labelhash(newSubdomain);
     const owner = state.address;
     console.log({ node, label, owner });
