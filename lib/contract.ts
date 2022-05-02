@@ -84,12 +84,18 @@ export async function claimName(
 
   const rent = await controller.rentPrice(name, duration);
 
-  const commitmentHash = await controller.makeCommitment(name, address, secret);
+  const commitmentHash = await controller.makeCommitmentWithConfig(
+    name,
+    address,
+    secret,
+    addresses.resolver,
+    address
+  );
 
   const commit = await controller.commit(commitmentHash);
   await commit.wait();
 
-  window.localStorage.setItem(`secret-${name}.movr`, secret);
+  window.localStorage.setItem(`secret-${name}`, secret);
   return { valid, available, rent, commitmentHash, secret, commit };
 }
 
@@ -199,7 +205,6 @@ export async function setText(
 
   try {
     const setText = await resolver.setText(node, key, value);
-    console.log('Setting Text');
     await setText.wait();
     return { success: true };
   } catch (error) {

@@ -12,45 +12,53 @@ import { Web3Context } from '@components/wallet';
 import { MdNotes, MdInfo, MdSegment } from 'react-icons/md';
 import { GetServerSidePropsContext } from 'next';
 import client from '@lib/apollo';
-import { GET_REGISTRATION, GET_RESOLVER_BY_ID } from 'graphql/queries';
+import {
+  GET_DOMAIN_WITH_RESOLVER,
+  GET_REGISTRATION,
+  GET_RESOLVER_BY_ID,
+} from 'graphql/queries';
 import dayjs from 'dayjs';
-import { keccak256, namehash } from 'ethers/lib/utils';
+import { namehash } from 'ethers/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
-import contractLog from '@lib/dev/console-contract';
 import { ethers } from 'ethers';
 
-interface ManageNameProps {
+interface DomainWithResolver {
+  id: string;
+  labelName: string;
   name: string;
-  registrationInfo: {
-    labelName: string;
+  owner: {
     id: string;
-    registrant: {
+    registrations: {
+      cost: string;
+      expiryDate: string;
       id: string;
-    };
-    expiryDate: string;
-    domain: {
-      parent: {
-        id: string;
-        owner: {
-          id: string;
-        };
-      };
-      owner: {
-        id: string;
-      };
-    };
+      labelName: string;
+      registrationDate: string;
+    }[];
   };
-  textRecords: string[];
+  resolvedAddress: {
+    id: string;
+  };
+  parent: {
+    id: string;
+    name: string;
+  };
+  resolver: {
+    id: string;
+    texts: string[];
+    address: string;
+  };
+  ttl: boolean | null;
+}
+
+interface ManageNameProps {
+  domain: DomainWithResolver;
 }
 
 const labelhash = (label: string) =>
   ethers.utils.keccak256(ethers.utils.toUtf8Bytes(label));
 
-export default function ManageName({
-  name,
-  registrationInfo,
-  textRecords,
-}: ManageNameProps) {
+export default function ManageName({ domain }: ManageNameProps) {
   const { state } = useContext(Web3Context);
 
   const [domainInfo, setDomainInfo] = useState<DomainInfo>({
@@ -81,46 +89,45 @@ export default function ManageName({
   const [subdomainProcessing, setSubdomainProcessing] = useState(false);
 
   useEffect(() => {
-    if (registrationInfo) {
+    if (domain) {
       setDomainInfo((d) => ({
         ...d,
-        registrant: registrationInfo.registrant.id,
+        registrant: domain.owner.id,
         expirationDate: dayjs(
-          parseFloat(registrationInfo.expiryDate) * 1000
+          parseFloat(domain.owner.registrations[0].expiryDate) * 1000
         ).format('MM/DD/YY @ hh:mm'),
-        controller: registrationInfo.registrant.id,
-        parent: registrationInfo.domain.parent.id,
-        resolver: registrationInfo.domain.parent.owner.id,
+        controller: domain.resolvedAddress.id,
+        parent: `${domain.parent.id} - ${domain.parent.name}`,
+        resolver: domain.resolver.address,
       }));
     }
-  }, [registrationInfo]);
+  }, [domain]);
 
   useEffect(() => {
     const resolve = async (field: string) => {
-      if (typeof name !== 'string') return;
-      const resolved = await resolveText(`${name}.movr`, field);
+      if (typeof domain.name !== 'string') return;
+      const resolved = await resolveText(domain.name, field);
       return resolved;
     };
 
     async function getTexts() {
       const newFields: any = {};
 
-      for (let record of textRecords) {
+      for (let record of domain.resolver.texts) {
         const resolvedText = await resolve(record);
         newFields[record] = resolvedText;
       }
       setTextFields((text) => ({ ...text, ...newFields }));
     }
 
-    if (textRecords) {
+    if (domain.resolver.texts) {
       getTexts();
     }
-    // @ts-ignore
-  }, [name, textRecords]);
+  }, [domain]);
 
   const setRecord = () => {
-    if (typeof name !== 'string') return;
-    setText(state.web3Provider, `${name}.movr`, 'twitter', 'jfdgkfdgjk');
+    if (typeof domain.name !== 'string') return;
+    setText(state.web3Provider, domain.name, 'twitter', 'jfdgkfdgjk');
   };
 
   const updateRecords = async () => {
@@ -138,7 +145,7 @@ export default function ManageName({
     // );
     // await method.wait();
     const test = resolver.populateTransaction.setText(
-      `${name}.movr`,
+      domain.name,
       'url',
       'https://natelook.com'
     );
@@ -196,7 +203,7 @@ export default function ManageName({
           </span>
 
           <h1 className='text-5xl text-yellow font-bold uppercase leading-5'>
-            {name}
+            {domain.name}
           </h1>
         </div>
         <div className='col-span-12  bg-[#1d1d1d] rounded'>
@@ -297,28 +304,15 @@ export async function getServerSideProps({ query }: GetServerSidePropsContext) {
   }
 
   const { data } = await client.query({
-    query: GET_REGISTRATION,
+    query: GET_DOMAIN_WITH_RESOLVER,
     variables: {
       id: `${namehash(Array.isArray(query.name) ? query.name[0] : query.name)}`,
     },
   });
 
-  const { data: texts } = await client.query({
-    query: GET_RESOLVER_BY_ID,
-    variables: { id: data.registrations[0].domain.id },
-  });
-
-  let textRecords = null;
-
-  if (texts.resolvers.length !== 0) {
-    textRecords = texts.resolvers[0].texts;
-  }
-
   return {
     props: {
-      name: query.name,
-      registrationInfo: data.registrations[0],
-      textRecords,
+      domain: data.domain,
     },
   };
 }

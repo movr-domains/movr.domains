@@ -44,7 +44,6 @@ export default function RegisterPage() {
   const { valid, error: nameError } = useSearchName(newName);
 
   useEffect(() => {
-    console.log('claimingError', claimingError);
     if (claimingError) {
       setStep(1);
     }

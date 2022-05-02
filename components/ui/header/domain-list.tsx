@@ -35,7 +35,7 @@ export default function DomainList({
                 (registration: any) =>
                   registration.domain.name && (
                     <li key={registration.domain.name}>
-                      <Link href={`/domain/${registration.domain.labelName}`}>
+                      <Link href={`/domain/${registration.domain.name}`}>
                         <a>{registration.domain.name}</a>
                       </Link>
                     </li>

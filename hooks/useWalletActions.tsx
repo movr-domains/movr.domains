@@ -12,7 +12,6 @@ export default function useWalletActions() {
       const provider = await web3Modal.connect();
 
       const web3Provider = new ethers.providers.Web3Provider(provider);
-      console.log({ web3Provider });
       const signer = web3Provider.getSigner();
       if (!signer) {
         console.log('there is no signer');

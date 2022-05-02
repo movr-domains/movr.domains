@@ -10,13 +10,17 @@ interface DomainCardProps {
 
 export default function DomainCard({ domain, expiration }: DomainCardProps) {
   return (
-    <Link href={`/domain/${domain.labelName}/manage`} key={domain.id}>
+    <Link href={`/domain/${domain.name}/manage`} key={domain.id}>
       <a>
         <div className='bg-black transition duration-300 hover:border-opacity-100 p-3 rounded drop-shadow relative'>
           <div className='flex justify-center'>
             {domain.id && (
               <Image
-                src={`http://whispering-journey-12465.herokuapp.com/${domain.labelhash}/image`}
+                src={
+                  process.env.NETWORK === 'LOCAL'
+                    ? `http://localhost:3000/api/metadata/${domain.labelhash}/image`
+                    : `http://whispering-journey-12465.herokuapp.com/${domain.labelhash}/image`
+                }
                 height='300px'
                 width='300px'
                 alt={`${domain.labelName} domain`}

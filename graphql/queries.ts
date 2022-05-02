@@ -47,6 +47,39 @@ export const GET_ALL_DOMAINS = gql`
   }
 `;
 
+export const GET_DOMAIN_WITH_RESOLVER = gql`
+  query getDomainWithResolver($id: String!) {
+    domain(id: $id, subgraphError: allow) {
+      id
+      name
+      labelhash
+      labelName
+      parent {
+        id
+        name
+      }
+      resolvedAddress {
+        id
+      }
+      owner {
+        id
+        registrations(where: { domain: $id }) {
+          id
+          registrationDate
+          cost
+          expiryDate
+          labelName
+        }
+      }
+      resolver {
+        id
+        texts
+        address
+      }
+    }
+  }
+`;
+
 export const GET_REGISTRATION = gql`
   query getRegistration($id: String!) {
     registrations(where: { domain: $id }) {

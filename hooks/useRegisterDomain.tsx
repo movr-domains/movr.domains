@@ -4,6 +4,8 @@ import addresses from 'constants/contracts';
 import { BigNumber, ethers } from 'ethers';
 import { useContext, useEffect, useState } from 'react';
 import MOVRRegistrarControllerABI from '@lib/abis/MOVRRegistrarControllerABI.json';
+import { useRouter } from 'next/router';
+import contractLog from '@lib/dev/console-contract';
 
 const oneYear = 31536000;
 
@@ -17,6 +19,8 @@ export default function useRegisterDomain(name: string, years: number) {
   const [claimingError, setClaimingError] = useState(false);
   const [registering, setRegistering] = useState(false);
   const [registered, setRegistered] = useState(false);
+  const [commitHash, setCommitHash] = useState<null | string>();
+  const router = useRouter();
 
   useEffect(() => {
     async function fetchRent() {
@@ -57,6 +61,7 @@ export default function useRegisterDomain(name: string, years: number) {
     }
 
     const formattedName = name.split('.')[0];
+    console.log({ formattedName, secret });
 
     const signer = await state.web3Provider.getSigner();
 
@@ -65,24 +70,33 @@ export default function useRegisterDomain(name: string, years: number) {
       MOVRRegistrarControllerABI.abi,
       signer
     );
+    contractLog(registrar);
 
     try {
-      const register = await registrar.register(
+      const register = await registrar.registerWithConfig(
         formattedName,
         state.address,
-        oneYear * years,
+        oneYear,
         secret,
+        addresses.resolver,
+        state.address,
         {
           value: rent,
           gasLimit: 420000,
         }
       );
-      setRegistering(true);
       await register.wait();
+      setRegistering(true);
+
       setRegistering(false);
-      return setRegistered(true);
+      setRegistered(true);
+      return;
     } catch (error) {
-      console.log(error);
+      setRegistered(false);
+      console.log({ error });
+      if (error == 'Name is not available ') {
+        router.push('/');
+      }
       return { message: 'Something went wrong', error };
     }
   };
@@ -104,14 +118,14 @@ export default function useRegisterDomain(name: string, years: number) {
     }
 
     const formattedName = name.split('.')[0];
-    console.log(formattedName);
+    console.log({ formattedName });
 
     try {
       setClaiming(true);
       const { error, secret, commit } = await claimName(
         formattedName,
         state.web3Provider,
-        years * oneYear,
+        oneYear * years,
         state.address
       );
 
@@ -123,6 +137,8 @@ export default function useRegisterDomain(name: string, years: number) {
       }
 
       setSecretHash(secret);
+      setCommitHash(commit);
+      console.log({ secret });
       // setStep(2);
       setClaiming(false);
     } catch (error) {

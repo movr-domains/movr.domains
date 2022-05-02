@@ -31,8 +31,6 @@ export default async function metaDataImage(
     variables: { tokenId },
   });
 
-  console.log({ data });
-
   if (!data?.domains[0]) {
     return res.status(404).json({ error: 'No token found with that ID' });
   }
