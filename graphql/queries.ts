@@ -54,6 +54,11 @@ export const GET_DOMAIN_WITH_RESOLVER = gql`
       name
       labelhash
       labelName
+      subdomains {
+        id
+        name
+        labelhash
+      }
       parent {
         id
         name

@@ -21,14 +21,20 @@ import dayjs from 'dayjs';
 import { namehash } from 'ethers/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ethers } from 'ethers';
+import Link from 'next/link';
 
 interface DomainWithResolver {
   id: string;
   labelName: string;
   name: string;
+  subdomains?: {
+    id: string;
+    name: string;
+    labelhash: string;
+  }[];
   owner: {
     id: string;
-    registrations: {
+    registrations?: {
       cost: string;
       expiryDate: string;
       id: string;
@@ -36,14 +42,14 @@ interface DomainWithResolver {
       registrationDate: string;
     }[];
   };
-  resolvedAddress: {
+  resolvedAddress?: {
     id: string;
   };
   parent: {
     id: string;
     name: string;
   };
-  resolver: {
+  resolver?: {
     id: string;
     texts: string[];
     address: string;
@@ -57,6 +63,9 @@ interface ManageNameProps {
 
 const labelhash = (label: string) =>
   ethers.utils.keccak256(ethers.utils.toUtf8Bytes(label));
+
+const formatDate = (date: string) =>
+  dayjs(parseFloat(date) * 1000).format('MM/DD/YY @ hh:mm');
 
 export default function ManageName({ domain }: ManageNameProps) {
   const { state } = useContext(Web3Context);
@@ -93,12 +102,17 @@ export default function ManageName({ domain }: ManageNameProps) {
       setDomainInfo((d) => ({
         ...d,
         registrant: domain.owner.id,
-        expirationDate: dayjs(
-          parseFloat(domain.owner.registrations[0].expiryDate) * 1000
-        ).format('MM/DD/YY @ hh:mm'),
-        controller: domain.resolvedAddress.id,
+        expirationDate:
+          domain.owner?.registrations && domain.owner.registrations.length !== 0
+            ? formatDate(domain?.owner?.registrations[0].expiryDate)
+            : 'Subdomains expire with parent',
+        controller: domain?.resolvedAddress?.id
+          ? domain.resolvedAddress.id
+          : 'No address set',
         parent: `${domain.parent.id} - ${domain.parent.name}`,
-        resolver: domain.resolver.address,
+        resolver: domain?.resolver?.address
+          ? domain?.resolver?.address
+          : 'No resolver set',
       }));
     }
   }, [domain]);
@@ -113,6 +127,10 @@ export default function ManageName({ domain }: ManageNameProps) {
     async function getTexts() {
       const newFields: any = {};
 
+      if (!domain?.resolver) {
+        return;
+      }
+
       for (let record of domain.resolver.texts) {
         const resolvedText = await resolve(record);
         newFields[record] = resolvedText;
@@ -120,7 +138,7 @@ export default function ManageName({ domain }: ManageNameProps) {
       setTextFields((text) => ({ ...text, ...newFields }));
     }
 
-    if (domain.resolver.texts) {
+    if (domain.resolver?.texts) {
       getTexts();
     }
   }, [domain]);
@@ -228,63 +246,80 @@ export default function ManageName({ domain }: ManageNameProps) {
             updateRecords={updateRecords}
           />
         </div>
-
-        <div className='col-span-12 bg-[#1d1d1d] rounded mb-12'>
-          <div className='p-5'>
-            <div className='flex text-white items-center justify-between'>
-              <div className='flex items-center space-x-2'>
-                <MdSegment />
-                <h2 className='text-3xl uppercase font-bold'>Subdomains</h2>
-              </div>
-              <div>
-                <span
-                  className='block uppercase font-bold text-sm tracking-wider cursor-pointer'
-                  onClick={() => setAddingSubdomain(!addingSubdomain)}
-                >
-                  Add
-                </span>
-              </div>
-            </div>
-            <AnimatePresence>
-              {addingSubdomain && (
-                <motion.div
-                  initial={{ y: -50 }}
-                  animate={{ y: 0 }}
-                  exit={{ y: -50, opacity: 0 }}
-                  className='px-5 mt-5'
-                >
-                  <form
-                    onSubmit={(e: React.FormEvent) => {
-                      e.preventDefault();
-                      createSubdomain();
-                    }}
+        {domain.parent.id === namehash('movr') && (
+          <div className='col-span-12 bg-[#1d1d1d] rounded mb-12'>
+            <div className='p-5'>
+              <div className='flex text-white items-center justify-between'>
+                <div className='flex items-center space-x-2'>
+                  <MdSegment />
+                  <h2 className='text-3xl uppercase font-bold'>Subdomains</h2>
+                </div>
+                <div>
+                  <span
+                    className='block uppercase font-bold text-sm tracking-wider cursor-pointer'
+                    onClick={() => setAddingSubdomain(!addingSubdomain)}
                   >
-                    <label
-                      htmlFor='new-subdomain'
-                      className='uppercase text-lg font-bold font-cabin'
+                    Add
+                  </span>
+                </div>
+              </div>
+              <AnimatePresence>
+                {addingSubdomain && (
+                  <motion.div
+                    initial={{ y: -50 }}
+                    animate={{ y: 0 }}
+                    exit={{ y: -50, opacity: 0 }}
+                    className='px-5 mt-5'
+                  >
+                    <form
+                      onSubmit={(e: React.FormEvent) => {
+                        e.preventDefault();
+                        createSubdomain();
+                      }}
                     >
-                      Add a New Subdomain
-                    </label>
-                    <input
-                      id='new-subdomain'
-                      value={newSubdomain}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setNewSubdomain(e.target.value)
-                      }
-                      placeholder='New Subdomain'
-                      className='border bg-transparent w-full rounded px-3 py-1'
-                    />
-                    <div className='flex justify-end'>
-                      <button className='btn uppercase font-bold'>
-                        Create Subdomain
-                      </button>
-                    </div>
-                  </form>
-                </motion.div>
+                      <label
+                        htmlFor='new-subdomain'
+                        className='uppercase text-lg font-bold font-cabin'
+                      >
+                        Add a New Subdomain
+                      </label>
+                      <input
+                        id='new-subdomain'
+                        value={newSubdomain}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          setNewSubdomain(e.target.value)
+                        }
+                        placeholder='New Subdomain'
+                        className='border bg-transparent w-full rounded px-3 py-1'
+                      />
+                      <div className='flex justify-end'>
+                        <button className='btn uppercase font-bold'>
+                          Create Subdomain
+                        </button>
+                      </div>
+                    </form>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              {domain.subdomains && (
+                <div className='mt-10 uppercase font-cabin tracking-wider'>
+                  {domain.subdomains.map((subdomain) => (
+                    <Link
+                      href={`/domain/${subdomain.name}/manage`}
+                      key={subdomain.id}
+                    >
+                      <a>
+                        <div key={subdomain.id}>
+                          <span>{subdomain.name}</span>
+                        </div>
+                      </a>
+                    </Link>
+                  ))}
+                </div>
               )}
-            </AnimatePresence>
+            </div>
           </div>
-        </div>
+        )}
       </main>
       <div className='fixed bottom-2 right-2 flex space-x-3'>
         <button
@@ -303,10 +338,15 @@ export async function getServerSideProps({ query }: GetServerSidePropsContext) {
     return;
   }
 
+  const node = `${namehash(
+    Array.isArray(query.name) ? query.name[0] : query.name
+  )}`;
+  console.log(node);
+
   const { data } = await client.query({
     query: GET_DOMAIN_WITH_RESOLVER,
     variables: {
-      id: `${namehash(Array.isArray(query.name) ? query.name[0] : query.name)}`,
+      id: node,
     },
   });
 
