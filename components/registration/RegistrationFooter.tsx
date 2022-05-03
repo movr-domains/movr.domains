@@ -36,7 +36,7 @@ export default function RegistrationFooter({
               <QuestionMark />
             </button>
           </div>
-          <p className='uppercase text-sm text-gray'>Step {step} of 3</p>
+          <p className='uppercase text-sm text-darkgrey'>Step {step} of 3</p>
         </div>
         {step === 2 && (
           <div className='flex items-center space-x-3'>

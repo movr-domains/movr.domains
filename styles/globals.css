@@ -49,4 +49,8 @@
   .nav-list-item:last-child {
     @apply border-none;
   }
+
+  .input-el {
+    @apply w-full text-white outline-none py-1 px-3 rounded transition-colors duration-200;
+  }
 }

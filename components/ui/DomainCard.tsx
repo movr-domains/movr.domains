@@ -19,7 +19,7 @@ export default function DomainCard({ domain, expiration }: DomainCardProps) {
                 src={
                   process.env.NETWORK === 'LOCAL'
                     ? `http://localhost:3000/api/metadata/${domain.labelhash}/image`
-                    : `http://whispering-journey-12465.herokuapp.com/${domain.labelhash}/image`
+                    : `https://whispering-journey-12465.herokuapp.com/${domain.labelhash}/image`
                 }
                 height='300px'
                 width='300px'
@@ -28,7 +28,7 @@ export default function DomainCard({ domain, expiration }: DomainCardProps) {
             )}
           </div>
           <div className='flex flex-col items-end mt-2'>
-            <span className='text-xs uppercase text-gray -mb-2'>
+            <span className='text-xs uppercase text-darkgrey -mb-2'>
               Expires{' '}
               <span className=''>
                 {dayjs(parseInt(expiration) * 1000).format('MM/DD/YY')}

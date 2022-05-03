@@ -49,7 +49,7 @@ export default function Header({ name, step }: { name: string; step: number }) {
         {step === 1 && (
           <motion.p
             exit={{ y: -50, opacity: 0 }}
-            className='text-gray leading-4'
+            className='text-darkgrey leading-4'
             layout
           >
             <span className='text-yellow'>Domain</span>{' '}

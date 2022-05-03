@@ -11,7 +11,6 @@ export default function useSearchName(searchedName?: string) {
   useEffect(() => {
     if (searchedName) {
       const validated = validate(searchedName, false);
-      console.log(validated);
 
       if (validated.error) {
         setError(validated.error);

@@ -9,6 +9,7 @@ import { SetPrimaryName } from '@components/domain';
 import { GET_ACCOUNT_DOMAINS } from 'graphql/queries';
 import { FaChevronDown } from 'react-icons/fa';
 import { AnimatePresence, motion } from 'framer-motion';
+import classNames from 'classnames';
 
 type OrderByType = 'labelName' | 'expiryDate' | 'registrationDate';
 type OrderDirectionsType = 'asc' | 'desc';
@@ -18,6 +19,9 @@ export default function AccountPage() {
   const { query: routerQuery } = useRouter();
   const [modalOpen, setModalOpen] = useState(false);
   const [sortMenuOpen, setSortMenuOpen] = useState(false);
+  const [screen, setScreen] = useState<'registered' | 'controlled'>(
+    'registered'
+  );
   const [orderDirection, setOrderDirection] =
     useState<OrderDirectionsType>('asc');
   const [orderBy, setOrderBy] = useState<OrderByType>('labelName');
@@ -30,7 +34,6 @@ export default function AccountPage() {
     nextFetchPolicy: 'no-cache',
   });
 
-  console.log('address', state.address);
   const setSort = (sortOption: OrderByType) => {
     setSortMenuOpen(false);
     setOrderBy(sortOption);
@@ -73,10 +76,28 @@ export default function AccountPage() {
           )}
         </div>
         <div className='wrapper col-span-full mb-4'>
-          <h2 className='col-span-3 text-xl font-bold font-cabin uppercase'>
+          <h2
+            className={classNames(
+              'col-span-3 text-xl font-bold font-cabin uppercase cursor-pointer',
+              {
+                'text-[#7B7B7B]': screen != 'registered',
+                'text-white': screen == 'registered',
+              }
+            )}
+            onClick={() => setScreen('registered')}
+          >
             Registered Domains
           </h2>
-          <h2 className='col-span-3 text-xl font-bold font-cabin uppercase text-[#7B7B7B]'>
+          <h2
+            className={classNames(
+              'col-span-3 text-xl font-bold font-cabin uppercase cursor-pointer',
+              {
+                'text-[#7B7B7B]': screen != 'controlled',
+                'text-white': screen == 'controlled',
+              }
+            )}
+            onClick={() => setScreen('controlled')}
+          >
             Controlled Domains
           </h2>
           <div className='col-start-10 col-span-3'>

@@ -78,7 +78,7 @@ export default function YearsSelect({
             >
               <span
                 className={classNames({
-                  'text-gray': focused,
+                  'text-darkgrey': focused,
                 })}
               >
                 {years ? years : 0}

@@ -1,8 +1,15 @@
 import type { DomainInfo, TextRecords } from 'constants/types';
-import React, { useContext, useEffect, useState } from 'react';
-import { InputGroup } from '@components/domain';
+import React, {
+  createRef,
+  FormEvent,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
+import { Input, InputGroup } from '@components/domain';
 import {
-  getResolver,
+  getName,
+  registrarContract,
   registryContract,
   resolverContract,
   resolveText,
@@ -12,21 +19,19 @@ import { Web3Context } from '@components/wallet';
 import { MdNotes, MdInfo, MdSegment } from 'react-icons/md';
 import { GetServerSidePropsContext } from 'next';
 import client from '@lib/apollo';
-import {
-  GET_DOMAIN_WITH_RESOLVER,
-  GET_REGISTRATION,
-  GET_RESOLVER_BY_ID,
-} from 'graphql/queries';
+import { GET_DOMAIN_WITH_RESOLVER } from 'graphql/queries';
 import dayjs from 'dayjs';
 import { namehash } from 'ethers/lib/utils';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ethers } from 'ethers';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 interface DomainWithResolver {
   id: string;
   labelName: string;
   name: string;
+  labelhash: string;
   subdomains?: {
     id: string;
     name: string;
@@ -69,14 +74,7 @@ const formatDate = (date: string) =>
 
 export default function ManageName({ domain }: ManageNameProps) {
   const { state } = useContext(Web3Context);
-
-  const [domainInfo, setDomainInfo] = useState<DomainInfo>({
-    parent: '',
-    registrant: '',
-    controller: '',
-    expirationDate: '',
-    resolver: '',
-  });
+  const router = useRouter();
 
   const [textFields, setTextFields] = useState<TextRecords>({
     url: '',
@@ -96,26 +94,7 @@ export default function ManageName({ domain }: ManageNameProps) {
   const [newSubdomain, setNewSubdomain] = useState('');
   const [addingSubdomain, setAddingSubdomain] = useState(false);
   const [subdomainProcessing, setSubdomainProcessing] = useState(false);
-
-  useEffect(() => {
-    if (domain) {
-      setDomainInfo((d) => ({
-        ...d,
-        registrant: domain.owner.id,
-        expirationDate:
-          domain.owner?.registrations && domain.owner.registrations.length !== 0
-            ? formatDate(domain?.owner?.registrations[0].expiryDate)
-            : 'Subdomains expire with parent',
-        controller: domain?.resolvedAddress?.id
-          ? domain.resolvedAddress.id
-          : 'No address set',
-        parent: `${domain.parent.id} - ${domain.parent.name}`,
-        resolver: domain?.resolver?.address
-          ? domain?.resolver?.address
-          : 'No resolver set',
-      }));
-    }
-  }, [domain]);
+  const [nameExpiration, setNameExpiration] = useState<string | null>(null);
 
   useEffect(() => {
     const resolve = async (field: string) => {
@@ -143,6 +122,21 @@ export default function ManageName({ domain }: ManageNameProps) {
     }
   }, [domain]);
 
+  useEffect(() => {
+    const getExpirationDate = async () => {
+      const registrar = await registrarContract();
+      const nameExpires = await registrar.nameExpires(domain.labelhash);
+
+      setNameExpiration(ethers.BigNumber.from(nameExpires).toString());
+    };
+
+    if (domain.owner.registrations && domain.owner.registrations.length == 0) {
+      getExpirationDate();
+    }
+
+    console.log(domain.owner.registrations);
+  }, [domain, state.web3Provider]);
+
   const setRecord = () => {
     if (typeof domain.name !== 'string') return;
     setText(state.web3Provider, domain.name, 'twitter', 'jfdgkfdgjk');
@@ -155,7 +149,7 @@ export default function ManageName({ domain }: ManageNameProps) {
 
     const fieldsToUpdate: any = {};
     const multiCallArray: any = [];
-    console.log(resolver);
+    // console.log(resolver);
     // const method = await resolver.setText(
     //   `${name}.movr`,
     //   'url',
@@ -167,8 +161,6 @@ export default function ManageName({ domain }: ManageNameProps) {
       'url',
       'https://natelook.com'
     );
-
-    console.log(test);
 
     // Object.entries(textFields).map(([key, value]) => {
     //   // @ts-ignore
@@ -191,7 +183,7 @@ export default function ManageName({ domain }: ManageNameProps) {
     //   }
     // });
 
-    console.log(multiCallArray);
+    // console.log(multiCallArray);
   };
 
   const createSubdomain = async () => {
@@ -202,7 +194,7 @@ export default function ManageName({ domain }: ManageNameProps) {
     const node = namehash(domain.name);
     const label = labelhash(newSubdomain);
     const owner = state.address;
-    console.log({ node, label, owner });
+    // console.log({ node, label, owner });
 
     setSubdomainProcessing(true);
 
@@ -210,6 +202,36 @@ export default function ManageName({ domain }: ManageNameProps) {
     await set.wait();
 
     setSubdomainProcessing(false);
+  };
+
+  const setController = async (newController: string) => {
+    const signer = state.web3Provider.getSigner();
+    const resolver = resolverContract(signer);
+
+    try {
+      const setAddr = await resolver['setAddr(bytes32,address)'](
+        namehash(domain.name),
+        newController
+      );
+      await setAddr.wait();
+      // router.reload();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const transfer = async (newOwner: string) => {
+    console.log(newOwner);
+    const signer = state.web3Provider.getSigner();
+    const registry = registryContract(signer);
+
+    try {
+      const setOwner = await registry.setOwner(namehash(domain.name), newOwner);
+      await setOwner.wait();
+      // router.reload();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -225,7 +247,7 @@ export default function ManageName({ domain }: ManageNameProps) {
           </h1>
         </div>
         <div className='col-span-12  bg-[#1d1d1d] rounded'>
-          <InputGroup
+          {/* <InputGroup
             // @ts-ignore
             fields={domainInfo}
             setFields={(args) => setDomainInfo(args)}
@@ -233,7 +255,53 @@ export default function ManageName({ domain }: ManageNameProps) {
             icon={<MdInfo />}
             setCurrentFields={(fields) => setCurrentFields(fields)}
             updateRecords={updateRecords}
-          />
+          /> */}
+          <div className='p-5'>
+            <div className='flex text-white items-center justify-between'>
+              <div className='flex items-center space-x-2'>
+                <MdInfo />
+                <h2 className='text-3xl uppercase font-bold'>
+                  Domain Information
+                </h2>
+              </div>
+            </div>
+            <div className='space-y-1'>
+              <DomainInfoBlock title='Parent' data={domain.parent.name} />
+              <DomainInfoBlock
+                title='Expiration Date'
+                data={
+                  nameExpiration
+                    ? formatDate(nameExpiration)
+                    : domain.owner?.registrations &&
+                      domain.owner.registrations.length !== 0
+                    ? formatDate(domain?.owner?.registrations[0].expiryDate)
+                    : 'Subdomains expire with parent'
+                }
+              />
+              <DomainInfoBlock
+                title='Resolver'
+                data={
+                  domain?.resolver?.address
+                    ? domain?.resolver?.address
+                    : 'No resolver set'
+                }
+              />
+              <EditableDomainInfoBlock
+                title='Controller'
+                data={
+                  domain?.resolvedAddress?.id
+                    ? domain.resolvedAddress.id
+                    : 'No address set'
+                }
+                submit={(newController) => setController(newController)}
+              />
+              <EditableDomainInfoBlock
+                title='registrant'
+                data={domain.owner.id}
+                submit={(newOwner) => transfer(newOwner)}
+              />
+            </div>
+          </div>
         </div>
         <div className='col-span-12 mt-10  bg-[#1d1d1d] rounded mb-10'>
           <InputGroup
@@ -321,14 +389,6 @@ export default function ManageName({ domain }: ManageNameProps) {
           </div>
         )}
       </main>
-      <div className='fixed bottom-2 right-2 flex space-x-3'>
-        <button
-          onClick={setRecord}
-          className='bg-pink-500 px-3 py-1 rounded font-cabin uppercase block'
-        >
-          Set Record
-        </button>
-      </div>
     </React.Fragment>
   );
 }
@@ -341,7 +401,6 @@ export async function getServerSideProps({ query }: GetServerSidePropsContext) {
   const node = `${namehash(
     Array.isArray(query.name) ? query.name[0] : query.name
   )}`;
-  console.log(node);
 
   const { data } = await client.query({
     query: GET_DOMAIN_WITH_RESOLVER,
@@ -355,4 +414,78 @@ export async function getServerSideProps({ query }: GetServerSidePropsContext) {
       domain: data.domain,
     },
   };
+}
+
+function DomainInfoBlock({ title, data }: { title: string; data: string }) {
+  return (
+    <div>
+      <span className='uppercase font-bold block'>{title}</span>
+      <div className='w-full py-1 px-3 rounded transition-colors bg-[#2d2d2d]'>
+        {data}
+      </div>
+    </div>
+  );
+}
+
+function EditableDomainInfoBlock({
+  title,
+  data,
+  submit,
+}: {
+  title: string;
+  data: string;
+  submit: (value: string) => void;
+}) {
+  const [isEditing, setEditing] = useState(false);
+  const [value, setValue] = useState('');
+
+  return (
+    <div>
+      <span className='uppercase font-bold block'>{title}</span>
+      {!isEditing ? (
+        <div className='w-full pl-3 rounded transition-colors bg-[#2d2d2d] flex justify-between items-center'>
+          <span>{data}</span>
+          <button
+            className='bg-black rounded-tr rounded-br px-3 h-full block py-1 text-gray-200 font-cabin'
+            onClick={() => setEditing(true)}
+          >
+            Update
+          </button>
+        </div>
+      ) : (
+        <form
+          className='flex w-full'
+          onSubmit={(e: FormEvent) => {
+            e.preventDefault();
+            submit(value);
+          }}
+        >
+          <Input
+            name={title}
+            value={value}
+            changeEvent={(text) => setValue(text)}
+            hideLabel={true}
+            placeholder={`New ${title}`}
+            onBlur={() => !value && setEditing(false)}
+            className='w-full rounded-tr-none rounded-br-none'
+          />
+          <button
+            className='bg-[#2e2e2e] px-3 h-full block py-1 text-gray-200 font-cabin'
+            onClick={() => {
+              setEditing(false);
+              setValue('');
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            className='bg-black rounded rounded-tl-none rounded-bl-none px-3 h-full block py-1 text-gray-200 font-cabin'
+            type='submit'
+          >
+            Submit
+          </button>
+        </form>
+      )}
+    </div>
+  );
 }

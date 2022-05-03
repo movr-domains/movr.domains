@@ -2,6 +2,7 @@ import { BigNumber, ethers } from 'ethers';
 import addresses from 'constants/contracts';
 import MOVRRegistryABI from '@lib/abis/MOVRRegistry.json';
 import MOVRRegistrarControllerABI from '@lib/abis/MOVRRegistrarControllerABI.json';
+import BaseRegistrar from '@lib/abis/Registrar.json';
 import ReverseRegistrar from '@lib/abis/ReverseRegistrar.json';
 import PublicResolver from '@lib/abis/PublicResolver.json';
 import getProvider from './providers';
@@ -35,6 +36,14 @@ export function resolverContract(signer?: any) {
   return new ethers.Contract(
     addresses.resolver,
     PublicResolver.abi,
+    signer ? signer : provider
+  );
+}
+
+export async function registrarContract(signer?: any) {
+  return new ethers.Contract(
+    addresses.registrar,
+    BaseRegistrar.abi,
     signer ? signer : provider
   );
 }
