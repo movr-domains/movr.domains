@@ -30,7 +30,10 @@ export default function Header() {
   return (
     <Fragment>
       <div className='relative z-40 bg-[#0d0d0d]' style={{ height: '15px' }} />
-      <header
+      <motion.header
+        initial={{ opacity: 0, x: !isHomePage ? -1000 : 0 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5 }}
         className={classNames(
           'bg-[#3C3C3C] relative z-40 transition-colors duration-300 drop-shadow-[6px_5px_4px_rgba(0,0,0,.25)] rounded-r-sm',
           {
@@ -88,7 +91,7 @@ export default function Header() {
             </div>
           </div>
         </div>
-      </header>
+      </motion.header>
 
       <AnimatePresence>
         {dropdownOpen && (
