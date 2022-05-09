@@ -5,7 +5,7 @@ import dayjs from 'dayjs';
 
 interface DomainCardProps {
   domain: DomainProps;
-  expiration: string;
+  expiration?: string;
 }
 
 export default function DomainCard({ domain, expiration }: DomainCardProps) {
@@ -28,12 +28,14 @@ export default function DomainCard({ domain, expiration }: DomainCardProps) {
             )}
           </div>
           <div className='flex flex-col items-end mt-2'>
-            <span className='text-xs uppercase text-darkgrey -mb-2'>
-              Expires{' '}
-              <span className=''>
-                {dayjs(parseInt(expiration) * 1000).format('MM/DD/YY')}
+            {expiration && (
+              <span className='text-xs uppercase text-darkgrey -mb-2'>
+                Expires{' '}
+                <span className=''>
+                  {dayjs(parseInt(expiration) * 1000).format('MM/DD/YY')}
+                </span>
               </span>
-            </span>
+            )}
             <span className='font-bold uppercase text-yellow block'>
               Manage Domain
             </span>

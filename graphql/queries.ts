@@ -7,15 +7,11 @@ export const GET_ACCOUNT_DOMAINS = gql`
     $orderDirection: OrderDirection = asc
   ) {
     account(id: $account, subgraphError: allow) {
-      registrations(orderBy: $orderBy, orderDirection: $orderDirection) {
+      domains(orderBy: $orderBy, orderDirection: $orderDirection) {
         id
-        domain {
-          id
-          name
-          labelName
-          labelhash
-        }
-        expiryDate
+        name
+        labelName
+        labelhash
       }
     }
   }

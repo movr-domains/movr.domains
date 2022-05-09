@@ -150,17 +150,13 @@ export default function AccountPage() {
         {data && !loading ? (
           <div className='col-span-full'>
             <div className='grid grid-cols-4 gap-10'>
-              {data?.account?.registrations.map(
-                (registration: {
-                  domain: DomainProps;
-                  id: string;
-                  expiryDate: string;
-                }) =>
-                  registration.domain.name && (
+              {data?.account?.domains.map(
+                (domain: DomainProps) =>
+                  domain.name && (
                     <DomainCard
-                      domain={registration.domain}
-                      expiration={registration.expiryDate}
-                      key={registration.id}
+                      domain={domain}
+                      // expiration={registration.expiryDate}
+                      key={domain.id}
                     />
                   )
               )}
