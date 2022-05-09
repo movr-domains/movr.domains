@@ -74,10 +74,12 @@ export default function Wallet({
         </React.Fragment>
       ) : (
         <div>
-          <span className='text-xs font-cabin tracking-wider uppercase text-[#a4a4a4] leading-0 block -mb-2'>
+          <span className='text-xs font-cabin tracking-wider uppercase text-[#a4a4a4] leading-none block -mb-2'>
             Incorrect Chain
           </span>
-          <span className='font-cabin uppercase'>Switch Networks</span>
+          <span className='font-cabin uppercase leading-none text-sm'>
+            Click to Switch Networks
+          </span>
         </div>
       )}
     </div>

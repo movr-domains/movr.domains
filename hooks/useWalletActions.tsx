@@ -53,9 +53,49 @@ export default function useWalletActions() {
     [state?.provider, dispatch]
   );
 
-  const switchChainIds = useCallback(async function () {
-    console.log(web3Modal);
-  }, []);
+  const switchChainIds = useCallback(
+    async function () {
+      const chainId = process.env.CHAIN_ID!;
+      const chainHex = ethers.utils.hexValue(parseInt(chainId));
+
+      try {
+        await state.provider.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: chainHex }],
+        });
+      } catch (switchError: any) {
+        console.log(switchError.code);
+        if (switchError.code === 4902) {
+          try {
+            await state.provider.request({
+              method: 'wallet_addEthereumChain',
+              params: [
+                {
+                  chainId: chainHex,
+                  chainName:
+                    parseInt(chainId) == 1285
+                      ? 'Moonriver'
+                      : parseInt(chainId) == 1287
+                      ? 'Moonbase Alpha'
+                      : 'Moonbase Dev',
+
+                  rpcUrls:
+                    parseInt(chainId) == 1285
+                      ? ['https://rpc.api.moonbase.moonbeam.network']
+                      : parseInt(chainId) == 1287
+                      ? ['https://rpc.api.moonbase.moonbeam.network']
+                      : ['http://127.0.0.1:9933'],
+                },
+              ],
+            });
+          } catch (error) {
+            console.log(error);
+          }
+        }
+      }
+    },
+    [state.provider]
+  );
 
   return { connect, disconnect, switchChainIds };
 }
