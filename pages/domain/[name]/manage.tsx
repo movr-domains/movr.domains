@@ -307,6 +307,7 @@ export default function ManageName({ domain }: ManageNameProps) {
           <InputGroup
             // @ts-ignore
             fields={textFields}
+            editable={state.address == domain.owner.id}
             setFields={(args) => setTextFields(args)}
             title='Text Records'
             icon={<MdNotes />}
@@ -322,14 +323,16 @@ export default function ManageName({ domain }: ManageNameProps) {
                   <MdSegment />
                   <h2 className='text-3xl uppercase font-bold'>Subdomains</h2>
                 </div>
-                <div>
-                  <span
-                    className='block uppercase font-bold text-sm tracking-wider cursor-pointer'
-                    onClick={() => setAddingSubdomain(!addingSubdomain)}
-                  >
-                    Add
-                  </span>
-                </div>
+                {state.address == domain.owner.id && (
+                  <div>
+                    <span
+                      className='block uppercase font-bold text-sm tracking-wider cursor-pointer'
+                      onClick={() => setAddingSubdomain(!addingSubdomain)}
+                    >
+                      Add
+                    </span>
+                  </div>
+                )}
               </div>
               <AnimatePresence>
                 {addingSubdomain && (

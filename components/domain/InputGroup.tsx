@@ -10,6 +10,7 @@ interface Field {
 interface InputGroupProps {
   title: string;
   fields: { [key: string]: string };
+  editable: boolean;
   setFields: (fields: Field) => void;
   icon: any;
   setCurrentFields: (fields: TextRecords) => void;
@@ -19,6 +20,7 @@ interface InputGroupProps {
 export default function InputGroup({
   title,
   fields,
+  editable,
   setFields,
   icon,
   setCurrentFields,
@@ -41,12 +43,14 @@ export default function InputGroup({
           <h2 className='text-3xl uppercase font-bold'>{title}</h2>
         </div>
         <div>
-          <span
-            className='block uppercase font-bold text-sm tracking-wider cursor-pointer'
-            onClick={() => setActive(!active)}
-          >
-            {!active ? 'edit' : 'editing'}
-          </span>
+          {editable && (
+            <span
+              className='block uppercase font-bold text-sm tracking-wider cursor-pointer'
+              onClick={() => setActive(!active)}
+            >
+              {!active ? 'edit' : 'editing'}
+            </span>
+          )}
         </div>
       </div>
       <div className='space-y-1'>

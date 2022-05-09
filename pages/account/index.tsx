@@ -148,20 +148,28 @@ export default function AccountPage() {
           </div>
         </div>
         {data && !loading ? (
-          <div className='col-span-full'>
-            <div className='grid grid-cols-4 gap-10'>
-              {data?.account?.domains.map(
-                (domain: DomainProps) =>
-                  domain.name && (
-                    <DomainCard
-                      domain={domain}
-                      // expiration={registration.expiryDate}
-                      key={domain.id}
-                    />
-                  )
-              )}
+          data.account != null ? (
+            <div className='col-span-full'>
+              <div className='grid grid-cols-4 gap-10'>
+                {data?.account?.domains.map(
+                  (domain: DomainProps) =>
+                    domain.name && (
+                      <DomainCard
+                        domain={domain}
+                        // expiration={registration.expiryDate}
+                        key={domain.id}
+                      />
+                    )
+                )}
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className='col-span-full'>
+              <p className='font-cabin text-gray-300'>
+                You currently do not have any names registered.
+              </p>
+            </div>
+          )
         ) : error ? (
           <div className='col-span-12'>
             <h1 className='text-4xl text-yellow font-bold uppercase'>
