@@ -70,13 +70,13 @@ export default function useRegisterDomain(name: string, years: number) {
       MOVRRegistrarControllerABI.abi,
       signer
     );
-    contractLog(registrar);
-
+    setRegistering(true);
+    console.log({ oneYear });
     try {
       const register = await registrar.registerWithConfig(
         formattedName,
         state.address,
-        oneYear,
+        oneYear * years,
         secret,
         addresses.resolver,
         state.address,
@@ -86,8 +86,6 @@ export default function useRegisterDomain(name: string, years: number) {
         }
       );
       await register.wait();
-      setRegistering(true);
-
       setRegistering(false);
       setRegistered(true);
       return;
