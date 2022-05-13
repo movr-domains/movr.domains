@@ -30,7 +30,7 @@ export default function HomePage() {
             </p>
             <div className="mt-10">
               <span className="uppercase">Arriving</span>
-              <h2 className="text-8xl font-bold">Q1 2022</h2>
+              <h2 className="text-8xl font-bold">June 2022</h2>
             </div>
           </div>
           <div className="flex items-center">
